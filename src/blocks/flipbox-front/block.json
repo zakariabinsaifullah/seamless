@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "seam/flipbox-front",
+    "version": "1.0.0",
+    "title": "Flip Box Front",
+    "category": "seam",
+    "parent": ["seam/flipbox"],
+    "icon": "images-alt2",
+    "description": "The front face of a flip box, visible before it flips.",
+    "example": {},
+    "supports": {
+        "html": false
+    },
+    "attributes": {
+        "heading": {
+            "type": "string",
+            "default": "Outsourced accounting."
+        },
+        "description": {
+            "type": "string",
+            "default": "From monthly bookkeeping to full financial strategy, we'll take it off your plate. We close the books, build reporting you'll actually read, and forecast the next quarter while you can still change course. Take that three-week vacation and don't worry about your finances. That's what we're here for."
+        },
+        "footerText": {
+            "type": "string",
+            "default": "Outsourced accounting"
+        },
+        "footerLink": {
+            "type": "object",
+            "default": {
+                "url": "",
+                "openInNewTab": false
+            }
+        }
+    },
+    "textdomain": "seamless",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css"
+}

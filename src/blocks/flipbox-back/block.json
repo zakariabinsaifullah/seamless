@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "seam/flipbox-back",
+    "version": "1.0.0",
+    "title": "Flip Box Back",
+    "category": "seam",
+    "parent": ["seam/flipbox"],
+    "icon": "images-alt2",
+    "description": "The back face of a flip box, revealed after it flips.",
+    "example": {},
+    "supports": {
+        "html": false
+    },
+    "attributes": {
+        "backgroundImage": {
+            "type": "object"
+        },
+        "heading": {
+            "type": "string",
+            "default": "Tax planning & prep."
+        }
+    },
+    "textdomain": "seamless",
+    "editorScript": "file:./index.js"
+}
