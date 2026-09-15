@@ -1074,6 +1074,14 @@ if ( ! function_exists( 'seam_render_iconic_button' ) ) :
 
 		$enabled = ! isset( $attrs['iconicButtonEnabled'] ) || $attrs['iconicButtonEnabled'];
 
+		// Alternative and Outline are text-only styles — skip the icon (and the
+		// `seam-icon-button` class it brings, which reserves layout space for it)
+		// entirely, rather than injecting it and hiding it with CSS.
+		$style_classes = $attrs['className'] ?? '';
+		if ( str_contains( $style_classes, 'is-style-alternative' ) || str_contains( $style_classes, 'is-style-outline' ) ) {
+			$enabled = false;
+		}
+
 		if ( ! $enabled || empty( $block_content ) ) {
 			return $block_content;
 		}

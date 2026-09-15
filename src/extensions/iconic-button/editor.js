@@ -16,6 +16,7 @@ const seamIconicButtonEditor = createHigherOrderComponent( BlockListBlock => {
 
         const { attributes, clientId, className: existingClassName } = props;
         const {
+            className,
             iconicButtonEnabled,
             iconicButtonIconName,
             iconicButtonCustomSvg,
@@ -27,7 +28,16 @@ const seamIconicButtonEditor = createHigherOrderComponent( BlockListBlock => {
             iconicButtonIconBgColor
         } = attributes;
 
-        if ( ! iconicButtonEnabled ) {
+        // Alternative and Outline are text-only styles — skip the icon (and the
+        // `seam-icon-button` class it brings, which reserves layout space for it)
+        // entirely, rather than injecting it and hiding it with CSS. Mirrors the
+        // same check in inc/extensions.php and save.js. Checked against the raw
+        // `className` attribute (not the rendered `props.className`), since the
+        // style-variation class may not have been applied to `props.className`
+        // yet by the time this HOC runs.
+        const isTextOnlyStyle = /is-style-(alternative|outline)/.test( className || '' );
+
+        if ( ! iconicButtonEnabled || isTextOnlyStyle ) {
             return <BlockListBlock { ...props } />;
         }
 

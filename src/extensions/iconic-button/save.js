@@ -14,9 +14,14 @@ function addIconicButtonSaveProps( props, blockType, attributes ) {
         return props;
     }
 
-    const { iconicButtonEnabled, iconicButtonUniqueClass, iconicButtonIconPosition } = attributes;
+    const { iconicButtonEnabled, iconicButtonUniqueClass, iconicButtonIconPosition, className } = attributes;
 
-    if ( ! iconicButtonEnabled || ! iconicButtonUniqueClass ) {
+    // Alternative and Outline are text-only styles — skip the icon classes
+    // entirely rather than adding then hiding them with CSS. Mirrors the same
+    // check in editor.js and inc/extensions.php (seam_render_iconic_button).
+    const isTextOnlyStyle = /is-style-(alternative|outline)/.test( className || '' );
+
+    if ( ! iconicButtonEnabled || ! iconicButtonUniqueClass || isTextOnlyStyle ) {
         return props;
     }
 

@@ -1,4 +1,7 @@
-.wp-block-button.seam-icon-button {
+// See style.scss for why this `:not()` is a defensive backstop, not just a
+// no-op — content saved before Alternative/Outline were excluded can still
+// carry the `seam-icon-button` class until it's re-saved.
+.wp-block-button.seam-icon-button:not(.is-style-alternative):not(.is-style-outline) {
     .wp-block-button__link {
         display: flex;
         align-items: center;
@@ -34,19 +37,12 @@
         }
     }
 
-    // Default button only (not Alternative/Outline/Link, which set their own icon
-    // treatment): invert the icon chip to match the button's hover fill/text swap
-    // in theme.json (styles.elements.button:hover).
-    &:not(.is-style-alternative):not(.is-style-outline):not(.is-style-link) .wp-block-button__link:hover:after {
+    // Default button only (Alternative/Outline never get this class at all —
+    // see editor.js/save.js; Link sets its own icon treatment): invert the
+    // icon chip to match the button's hover fill/text swap in theme.json
+    // (styles.elements.button:hover).
+    &:not(.is-style-link) .wp-block-button__link:hover:after {
         background-color: var(--wp--preset--color--seam-shadow);
-    }
-
-    // Alternative and Outline are text only (see blocks.css, same rule for the
-    // frontend). The editor's icon preview is injected inline per-block by
-    // editor.js, so this needs !important to win regardless of DOM order.
-    &.is-style-alternative .wp-block-button__link:after,
-    &.is-style-outline .wp-block-button__link:after {
-        display: none !important;
     }
 
     &.seam-icon-before {

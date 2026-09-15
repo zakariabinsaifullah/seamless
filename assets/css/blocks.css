@@ -139,9 +139,12 @@ header.wp-block-kadence-rowlayout::before {
 /*
  * Alternative — own fill/text colour and padding; radius and typography are
  * inherited from `styles.elements.button` in theme.json (both are 4px/Neue
- * Haas already, so no need to restate them). Text only, no icon — every
- * button gets the default icon box (inc/extensions.php, iconic-button
- * extension), so it's hidden here on purpose. Goes full width on tablet/mobile.
+ * Haas already, so no need to restate them). Text only, no icon: excluded
+ * from the iconic-button extension entirely (inc/extensions.php, save.js,
+ * editor.js all skip is-style-alternative/-outline), rather than getting the
+ * icon and hiding it — a hidden icon still reserves its layout space via the
+ * extension's own CSS (gap, tablet/mobile padding-right), which showed up as
+ * empty space on the right. Goes full width on tablet/mobile.
  *
  * theme.json declares this variation under
  * `styles.blocks.core/button.variations.alternative`, but block style variation
@@ -161,10 +164,6 @@ header.wp-block-kadence-rowlayout::before {
     color: var(--wp--preset--color--seam-white);
 }
 
-.wp-block-button.is-style-alternative .wp-block-button__link .seam-icon-button-svg {
-    display: none !important;
-}
-
 @media (max-width: 1024px) {
     .wp-block-button.is-style-alternative {
         width: 100%;
@@ -177,7 +176,8 @@ header.wp-block-kadence-rowlayout::before {
  * padding) wrapped in `:root :where(...)`, so these plain class selectors
  * outrank it — including padding, restated below so it doesn't pick up
  * core's baked-in value. Text only, no icon (same reasoning as Alternative
- * above).
+ * above); stays auto-width on tablet/mobile (no full-width override, unlike
+ * Alternative).
  */
 .wp-block-button.is-style-outline .wp-block-button__link {
     background-color: transparent;
@@ -185,7 +185,8 @@ header.wp-block-kadence-rowlayout::before {
     border: 1px solid #000000;
     color: #000000;
     padding: 4px 28px;
-    text-align: center;
+    text-align: center !important;
+    justify-content: center !important;
 }
 
 .wp-block-button.is-style-outline .wp-block-button__link:hover {
@@ -193,8 +194,12 @@ header.wp-block-kadence-rowlayout::before {
     color: var(--wp--preset--color--seam-shadow);
 }
 
-.wp-block-button.is-style-outline .wp-block-button__link .seam-icon-button-svg {
-    display: none !important;
+/* Explicit auto-width safety net for tablet/mobile — belt-and-suspenders
+   alongside excluding Outline from the iconic-button extension above. */
+@media (max-width: 1024px) {
+    .wp-block-button.is-style-outline {
+        width: auto !important;
+    }
 }
 
 /*
