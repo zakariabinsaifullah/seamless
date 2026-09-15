@@ -36,7 +36,7 @@ const Edit = props => {
         <>
             <Inspector {...props} />
             <div {...blockProps}>
-                <div className={`flip-box_item flip-box_hover ${selectSide}`}>
+                <div className={`flip-box_item ${selectSide}`}>
                     <div {...innerBlocksProps} />
                 </div>
             </div>
