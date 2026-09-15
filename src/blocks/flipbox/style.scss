@@ -19,7 +19,7 @@
 
     .flip-box_inner-item {
         box-sizing: border-box;
-        height: var(--flip-inner-item-height);
+        min-height: var(--flip-inner-item-height);
         position: relative;
         transition-duration: var(--flip-duration);
         transition-property: box-shadow, transform;
@@ -41,7 +41,7 @@
             position: absolute;
             top: 0;
             background-size: cover;
-            background-position: center;
+            background-position: center bottom;
         }
 
         .flip-box_front {
@@ -62,7 +62,8 @@
 
     .flip-box_back-content,
     .flip-box_front-content {
-        justify-content: flex-end;
+        justify-content: flex-start;
+        padding-top: 100px;
         text-align: left;
         color: #fff;
 
@@ -83,14 +84,14 @@
         .flip-box_heading {
             font-family: var(--wp--preset--font-family--quarto, Georgia, 'Times New Roman', serif);
             font-weight: 400;
-            font-size: clamp(28px, 4vw + 12px, 48px);
+            font-size: 36px;
             line-height: 1.15;
             color: #fff;
             margin: 0 0 20px;
         }
 
         p {
-            font-size: 16px;
+            font-size: 18px;
             line-height: 1.6;
             color: rgba(255, 255, 255, 0.92);
             margin: 0;
@@ -121,7 +122,7 @@
             }
 
             .flip-box_footer-arrow {
-                font-size: 22px;
+                font-size: 40px;
                 line-height: 1;
                 transition: transform 0.25s ease;
             }
@@ -135,6 +136,12 @@
             margin-top: 22px;
             width: 100%;
         }
+    }
+
+    .flip-box_back-content {
+        justify-content: flex-end;
+        padding-top: var(--flip-content-padding);
+        padding-bottom: 23px;
     }
 
     .flip-box_front {

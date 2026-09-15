@@ -13,7 +13,7 @@ const Save = ({ attributes }) => {
     return (
         <div {...blockProps}>
             <div className="flip-box-content flip-box_back-content">
-                <RichText.Content tagName="h2" className="flip-box_heading" value={heading} />
+                <RichText.Content tagName="h4" className="flip-box_heading" value={heading} />
                 <div className="flip-box_actions">
                     <InnerBlocks.Content />
                 </div>

@@ -18,7 +18,7 @@ const Edit = ({ attributes, setAttributes }) => {
             <div {...blockProps}>
                 <div className="flip-box-content flip-box_front-content">
                     <RichText
-                        tagName="h2"
+                        tagName="h4"
                         className="flip-box_heading"
                         value={heading}
                         onChange={value => setAttributes({ heading: value })}
