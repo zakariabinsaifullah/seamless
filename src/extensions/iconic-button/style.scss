@@ -1,0 +1,43 @@
+.wp-block-button.seam-icon-button {
+    .wp-block-button__link {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: var(--seam-icon-gap, 8px) !important;
+
+        &.has-text-align-left {
+            justify-content: flex-start !important;
+        }
+
+        &.has-text-align-center {
+            justify-content: center !important;
+        }
+
+        &.has-text-align-right {
+            justify-content: flex-end !important;
+        }
+
+        .seam-icon-button-svg {
+            flex-shrink: 0;
+            pointer-events: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--seam-icon-bg-color, transparent);
+            padding: var(--seam-icon-padding, 0);
+            border-radius: 50%;
+
+            svg {
+                width: var(--seam-icon-size, 1em);
+                height: var(--seam-icon-size, 1em);
+                fill: currentColor;
+            }
+        }
+    }
+
+    &.seam-icon-before {
+        .wp-block-button__link {
+            flex-direction: row-reverse;
+        }
+    }
+}

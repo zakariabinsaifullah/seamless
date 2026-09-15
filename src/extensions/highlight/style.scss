@@ -1,0 +1,40 @@
+/**
+ * Highlight format — gradient text.
+ *
+ * Loaded in the editor and on the front end so the two render identically.
+ */
+
+.seam-highlight {
+    font-weight: 400;
+
+    /*
+     * Fallback for browsers without `background-clip: text`. Without a real
+     * colour here the @supports block below would leave the text invisible,
+     * so this resolves to the middle stop of seam-gradient-two.
+     */
+    color: var(--wp--preset--color--seam-gray-asparagus, #3C5343);
+
+    &--400 {
+        font-weight: 400;
+    }
+
+    &--600 {
+        font-weight: 600;
+    }
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+    .seam-highlight {
+        background-image: var(--wp--preset--gradient--seam-gradient-two);
+
+        /*
+         * `-webkit-text-fill-color` wins over `color` where it is supported,
+         * so both are set to keep the glyphs transparent and let the gradient
+         * behind them show through.
+         */
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+    }
+}
