@@ -1,6 +1,7 @@
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
+import { useEffect } from '@wordpress/element';
 import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import { allowedBlocks } from './allowed-blocks';
@@ -29,6 +30,16 @@ const seamIconicButtonPanel = createHigherOrderComponent( BlockEdit => {
             iconicButtonIconPadding,
             iconicButtonIconBgColor
         } = attributes;
+
+        // Buttons default to `iconicButtonEnabled: true` (attribute.js) so every newly
+        // inserted button already has the arrow. The unique class can't be a static
+        // attribute default (it has to be per-instance), so assign it once on mount here.
+        useEffect( () => {
+            if ( iconicButtonEnabled && ! iconicButtonUniqueClass ) {
+                setAttributes( { iconicButtonUniqueClass: `seam-icon-button-${ clientId.slice( 0, 8 ) }` } );
+            }
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [] );
 
         return (
             <>

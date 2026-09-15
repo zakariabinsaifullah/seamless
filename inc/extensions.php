@@ -1038,11 +1038,28 @@ if ( ! function_exists( 'seam_iconic_button_svg_kses_args' ) ) :
 endif;
 
 
+if ( ! function_exists( 'seam_iconic_button_default_svg' ) ) :
+	/**
+	 * The arrow icon every core/button block ships with by default (see the
+	 * `iconicButtonCustomSvg` attribute default in
+	 * src/extensions/iconic-button/default-icon.js — keep both in sync).
+	 * Used when a button hasn't explicitly set its own icon, including markup
+	 * that never passes through the JS save pipeline (e.g. patterns/*.php).
+	 *
+	 * @return string
+	 */
+	function seam_iconic_button_default_svg() {
+		return '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.1109 0.5625V10.3125C13.1109 10.4617 13.0517 10.6048 12.9462 10.7102C12.8407 10.8157 12.6976 10.875 12.5484 10.875C12.3993 10.875 12.2562 10.8157 12.1507 10.7102C12.0452 10.6048 11.9859 10.4617 11.9859 10.3125V1.92L0.945967 12.96C0.839337 13.0594 0.698297 13.1135 0.552577 13.1109C0.406847 13.1083 0.267808 13.0493 0.164748 12.9462C0.0616875 12.8432 0.00265756 12.7041 8.75616e-05 12.5584C-0.00248244 12.4127 0.0516074 12.2716 0.150967 12.165L11.1909 1.125H2.79847C2.64929 1.125 2.50621 1.06574 2.40072 0.96025C2.29523 0.85476 2.23597 0.71168 2.23597 0.5625C2.23597 0.41332 2.29523 0.27024 2.40072 0.16475C2.50621 0.0592601 2.64929 0 2.79847 0H12.5484C12.6976 0 12.8407 0.0592601 12.9462 0.16475C13.0517 0.27024 13.1109 0.41332 13.1109 0.5625Z" fill="#253B2F"/></svg>';
+	}
+endif;
+
 if ( ! function_exists( 'seam_render_iconic_button' ) ) :
 	/**
 	 * Injects the icon SVG markup and size/gap/padding/background CSS custom
-	 * properties into core/button blocks on the frontend when the iconic button
-	 * feature is enabled.
+	 * properties into core/button blocks on the frontend. Enabled by default
+	 * (a button opts out with `"iconicButtonEnabled":false`), so this applies
+	 * uniformly whether the block was saved through the editor or is static
+	 * markup in a pattern/template file that never runs the JS save filters.
 	 *
 	 * @param string $block_content The rendered block HTML.
 	 * @param array  $block         The block data including name and attributes.
@@ -1055,38 +1072,40 @@ if ( ! function_exists( 'seam_render_iconic_button' ) ) :
 
 		$attrs = $block['attrs'] ?? array();
 
-		if ( empty( $attrs['iconicButtonEnabled'] ) || empty( $attrs['iconicButtonUniqueClass'] ) ) {
+		$enabled = ! isset( $attrs['iconicButtonEnabled'] ) || $attrs['iconicButtonEnabled'];
+
+		if ( ! $enabled || empty( $block_content ) ) {
 			return $block_content;
 		}
 
-		$icon_svg = ! empty( $attrs['iconicButtonCustomSvg'] ) ? $attrs['iconicButtonCustomSvg'] : ( $attrs['iconicButtonIcon'] ?? '' );
+		$icon_svg = ! empty( $attrs['iconicButtonCustomSvg'] )
+			? $attrs['iconicButtonCustomSvg']
+			: ( ! empty( $attrs['iconicButtonIcon'] ) ? $attrs['iconicButtonIcon'] : seam_iconic_button_default_svg() );
 
-		if ( empty( $icon_svg ) ) {
-			return $block_content;
-		}
+		// Add the styling hooks (wrapper classes + any per-instance CSS custom
+		// properties) to the outer wrapper element in a single tag-processor pass.
+		$processor = new WP_HTML_Tag_Processor( $block_content );
+		if ( $processor->next_tag() ) {
+			$processor->add_class( 'seam-icon-button' );
+			if ( 'seam-icon-before' === ( $attrs['iconicButtonIconPosition'] ?? '' ) ) {
+				$processor->add_class( 'seam-icon-before' );
+			}
 
-		if ( empty( $block_content ) ) {
-			return $block_content;
-		}
+			$css_vars = array();
+			if ( ! empty( $attrs['iconicButtonIconSize'] ) ) {
+				$css_vars[] = '--seam-icon-size:' . esc_attr( $attrs['iconicButtonIconSize'] );
+			}
+			if ( ! empty( $attrs['iconicButtonIconGap'] ) ) {
+				$css_vars[] = '--seam-icon-gap:' . esc_attr( $attrs['iconicButtonIconGap'] );
+			}
+			if ( ! empty( $attrs['iconicButtonIconPadding'] ) ) {
+				$css_vars[] = '--seam-icon-padding:' . esc_attr( $attrs['iconicButtonIconPadding'] );
+			}
+			if ( ! empty( $attrs['iconicButtonIconBgColor'] ) ) {
+				$css_vars[] = '--seam-icon-bg-color:' . esc_attr( $attrs['iconicButtonIconBgColor'] );
+			}
 
-		// Merge icon size/gap/padding/background CSS custom properties into the outer wrapper's style attribute.
-		$css_vars = array();
-		if ( ! empty( $attrs['iconicButtonIconSize'] ) ) {
-			$css_vars[] = '--seam-icon-size:' . esc_attr( $attrs['iconicButtonIconSize'] );
-		}
-		if ( ! empty( $attrs['iconicButtonIconGap'] ) ) {
-			$css_vars[] = '--seam-icon-gap:' . esc_attr( $attrs['iconicButtonIconGap'] );
-		}
-		if ( ! empty( $attrs['iconicButtonIconPadding'] ) ) {
-			$css_vars[] = '--seam-icon-padding:' . esc_attr( $attrs['iconicButtonIconPadding'] );
-		}
-		if ( ! empty( $attrs['iconicButtonIconBgColor'] ) ) {
-			$css_vars[] = '--seam-icon-bg-color:' . esc_attr( $attrs['iconicButtonIconBgColor'] );
-		}
-
-		if ( ! empty( $css_vars ) ) {
-			$processor = new WP_HTML_Tag_Processor( $block_content );
-			if ( $processor->next_tag() ) {
+			if ( ! empty( $css_vars ) ) {
 				$existing_style = $processor->get_attribute( 'style' ) ?? '';
 				$new_style      = rtrim( $existing_style, '; ' );
 				if ( $new_style ) {
@@ -1094,8 +1113,9 @@ if ( ! function_exists( 'seam_render_iconic_button' ) ) :
 				}
 				$new_style .= implode( ';', $css_vars );
 				$processor->set_attribute( 'style', $new_style );
-				$block_content = $processor->get_updated_html();
 			}
+
+			$block_content = $processor->get_updated_html();
 		}
 
 		// Build the icon markup and inject it after the link's inner content.

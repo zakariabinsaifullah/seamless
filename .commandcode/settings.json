@@ -48,7 +48,11 @@
       "Shell(git ls-files -z | perl -0ne 'chomp; print \"$_\\0\" unless m{\\.(jpg|jpeg|png|gif|webp|woff2?|ttf|otf|eot|ico|pdf)$} || m{swiper-bundle\\.min\\.js$} || m{^\\.commandcode/}' | xargs -0 perl -pi -e 's/seam-wine-berry/seam-outer-space/g; s/seam-bali-hai/seam-gray-asparagus/g; s/seam-neptune/seam-envy/g; s/seam-olive/seam-shadow/g; s/seam-flax/seam-pampas/g; s/#551C25/#253B2F/g; s/#551c25/#253b2f/g; s/#8FA4B7/#3C5343/g; s/#8fa4b7/#3c5343/g; s/#83C1C0/#94A594/g; s/#83c1c0/#94a594/g; s/#9A8700/#7F7750/g; s/#9a8700/#7f7750/g; s/#EED484/#F2F1E9/g; s/#eed484/#f2f1e9/g; s/#3D141A/#1D2F25/g; s/#3d141a/#1d2f25/g;' && echo SWEEP_DONE && node -e \"const t=JSON.parse(require('fs').readFileSync('theme.json','utf8')); console.log('JSON OK — palette:', t.settings.color.palette.length, 'colors; gradients:', t.settings.color.gradients.length)\" && echo '=== remnants ===' && rg -i -n 'wine-berry|bali-hai|neptune|#551c25|#8fa4b7|#83c1c0|#9a8700|#eed484|#3d141a|seam-olive|seam-flax' -g '!node_modules' -g '!.commandcode' -g '!*.min.js'; echo \"REMNANT_COUNT: $(rg -i -c 'wine-berry|bali-hai|neptune|#551c25|#8fa4b7|#83c1c0|#9a8700|#eed484|#3d141a|seam-olive|seam-flax' -g '!node_modules' -g '!.commandcode' -g '!*.min.js' | wc -l | tr -d ' ')\")",
       "Shell(node -e const t=JSON.parse(require('fs').readFileSync('theme.json','utf8')); t.settings.typography.fontSizes.forEach(f=>console.log((f.fluid?f.fluid.min+'–'+f.fluid.max+' fluid':f.size), '→', f.slug)))",
       "Shell(echo:*)",
-      "Shell(rg:*)"
+      "Shell(rg:*)",
+      "Shell(node -e JSON.parse(require('fs').readFileSync('theme.json','utf8')); console.log('OK'))",
+      "Shell(sed:*)",
+      "Shell(node -e JSON.parse(require('fs').readFileSync('theme.json','utf8')); console.log('JSON OK'))",
+      "Shell(perl -pi -e s/var\\(--wp--preset--color--seam-neutral-darker, #1f2222\\)/var(--wp--preset--color--seam-neutral-dark, #545454)/g; s/var\\(--wp--preset--color--seam-neutral-darker, #242424\\)/var(--wp--preset--color--seam-neutral-dark, #545454)/g; assets/css/latest-insights.css assets/css/events-articles-grid.css assets/css/partners-grid.css)"
     ],
     "deny": [],
     "defaultMode": "default"

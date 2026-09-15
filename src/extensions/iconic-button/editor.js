@@ -22,7 +22,9 @@ const seamIconicButtonEditor = createHigherOrderComponent( BlockListBlock => {
             iconicButtonIcon,
             iconicButtonIconPosition,
             iconicButtonIconSize,
-            iconicButtonIconGap
+            iconicButtonIconGap,
+            iconicButtonIconPadding,
+            iconicButtonIconBgColor
         } = attributes;
 
         if ( ! iconicButtonEnabled ) {
@@ -44,7 +46,14 @@ const seamIconicButtonEditor = createHigherOrderComponent( BlockListBlock => {
         // Combine existing className with animation class
         const combinedClassName = existingClassName ? `${ existingClassName } ${ btnIconClass }` : btnIconClass;
 
-        // If we have an SVG code, we use the mask approach
+        // The editor preview paints the icon via a `background-image` (not a CSS mask) on
+        // ::after, so it can show a background chip behind the glyph. This means editor
+        // and frontend agree on colour: icons with their own baked-in fill (e.g. a custom
+        // SVG with fill="#253B2F") render in that colour in both places. Icons that rely on
+        // `currentColor` (no fill baked in) still get tinted correctly on the frontend
+        // (style.scss inherits currentColor through the DOM), but in this editor preview
+        // they fall back to the colour baked into the icon library's SVG markup, since a
+        // background-image data URI is isolated from the host page's cascade.
         let maskStyle = '';
         if ( iconSVG ) {
             if ( iconicButtonIconGap ) {
@@ -59,18 +68,24 @@ const seamIconicButtonEditor = createHigherOrderComponent( BlockListBlock => {
                     --seam-icon-size: ${ iconicButtonIconSize }!important;
                 }`;
             }
+            if ( iconicButtonIconPadding ) {
+                maskStyle += `
+                .seam-icon-button.${ uniqueClass } .wp-block-button__link::after{
+                    --seam-icon-padding: ${ iconicButtonIconPadding }!important;
+                }`;
+            }
+            if ( iconicButtonIconBgColor ) {
+                maskStyle += `
+                .seam-icon-button.${ uniqueClass } .wp-block-button__link::after{
+                    --seam-icon-bg-color: ${ iconicButtonIconBgColor }!important;
+                }`;
+            }
             maskStyle += `
             .seam-icon-button.${ uniqueClass } .wp-block-button__link::after{
                 --seam-icon-url: url("${ svgToBase64DataUrl( iconSVG ) }");
-                display: inline-block;
+                display: inline-flex;
             }`;
         }
-
-        // Icon background + padding are intentionally not previewed here: the editor's
-        // ::after is a CSS mask (its background-color paints the icon glyph itself), so
-        // a background chip would need a second unmasked layer that never looks right
-        // alongside the mask. Frontend rendering (style.scss + seam_render_iconic_button)
-        // uses a real <span> wrapping the SVG, where background/padding work correctly.
 
         return (
             <>

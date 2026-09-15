@@ -129,15 +129,19 @@ header.wp-block-kadence-rowlayout::before {
  * `is-style-link`) is not emitted from theme.json at all, so those variations
  * are defined here rather than there.
  *
- * The only hover state is `styles.elements.button[":hover"]` in theme.json,
- * which sets the text colour to #000000. Do not add hover rules here without
- * checking theme.json, or the two will disagree.
+ * The default button (`styles.elements.button` in theme.json) has no hover
+ * state on purpose, and neither does Alternative below. Outline is the only
+ * variation with its own hover colours, mirrored in theme.json under
+ * `styles.blocks.core/button.variations`; keep the two in sync if either
+ * changes.
  */
 
 /*
- * Alternative — identical to the default button except for its fill and text
- * colour. Padding, radius, and typography are inherited from
- * `styles.elements.button` in theme.json.
+ * Alternative — own fill/text colour and padding; radius and typography are
+ * inherited from `styles.elements.button` in theme.json (both are 4px/Neue
+ * Haas already, so no need to restate them). Text only, no icon — every
+ * button gets the default icon box (inc/extensions.php, iconic-button
+ * extension), so it's hidden here on purpose. Goes full width on tablet/mobile.
  *
  * theme.json declares this variation under
  * `styles.blocks.core/button.variations.alternative`, but block style variation
@@ -145,13 +149,26 @@ header.wp-block-kadence-rowlayout::before {
  * restated here. Keep the two in sync.
  */
 .wp-block-button.is-style-alternative .wp-block-button__link {
-    background-color: var(--wp--preset--color--seam-envy);
-    color: #000000;
+    background-color: var(--wp--preset--color--seam-primary);
+    color: var(--wp--preset--color--seam-outer-space);
+    padding: 4px 28px;
 }
 
-/* Overrides the default button's hover, which would otherwise keep the text black. */
+/* Transition is inherited from the default button's `css` in theme.json
+   (styles.elements.button) — background-color/color/border-color at 0.3s. */
 .wp-block-button.is-style-alternative .wp-block-button__link:hover {
+    background-color: var(--wp--preset--color--seam-shadow);
     color: var(--wp--preset--color--seam-white);
+}
+
+.wp-block-button.is-style-alternative .wp-block-button__link .seam-icon-button-svg {
+    display: none !important;
+}
+
+@media (max-width: 1024px) {
+    .wp-block-button.is-style-alternative {
+        width: 100%;
+    }
 }
 
 /*
@@ -181,11 +198,23 @@ header.wp-block-kadence-rowlayout::before {
  * The trailing arrow is painted as a mask filled with `currentColor` rather
  * than a coloured background-image, so it inherits the link colour and follows
  * it on hover without needing a second copy of the icon.
+ *
+ * Also resets `min-height` back to auto: the default button's 64px minimum
+ * (`styles.elements.button` in theme.json) would otherwise stretch this into
+ * a tall box, which is wrong for a plain inline text link.
  */
 .wp-block-button.is-style-link .wp-block-button__link {
     background-color: transparent;
     background-image: none;
     color: #538988;
+    min-height: auto;
+}
+
+/* Every button gets the default icon box (inc/extensions.php, iconic-button extension),
+   but Link already paints its own trailing arrow via ::after above — skip the box so it
+   doesn't show twice. */
+.wp-block-button.is-style-link .wp-block-button__link .seam-icon-button-svg {
+    display: none !important;
 }
 
 .wp-block-button.is-style-link .wp-block-button__link::after {

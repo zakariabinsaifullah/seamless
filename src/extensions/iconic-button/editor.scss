@@ -22,19 +22,63 @@
             display: none;
             flex-shrink: 0;
             pointer-events: none;
-            width: var(--seam-icon-size, 1em);
-            height: var(--seam-icon-size, 1em);
-            mask-image: var(--seam-icon-url);
-            mask-position: center;
-            mask-size: contain;
-            mask-repeat: no-repeat;
-            background-color: currentColor;
+            width: calc(var(--seam-icon-size, 14px) + (2 * var(--seam-icon-padding, 17px)));
+            height: calc(var(--seam-icon-size, 14px) + (2 * var(--seam-icon-padding, 17px)));
+            border-radius: 3px;
+            background-color: var(--seam-icon-bg-color, var(--wp--preset--color--seam-primary));
+            background-image: var(--seam-icon-url);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: var(--seam-icon-size, 14px) var(--seam-icon-size, 14px);
+            transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+    }
+
+    // Default button only (not Alternative/Outline/Link, which set their own icon
+    // treatment): invert the icon chip to match the button's hover fill/text swap
+    // in theme.json (styles.elements.button:hover).
+    &:not(.is-style-alternative):not(.is-style-outline):not(.is-style-link) .wp-block-button__link:hover:after {
+        background-color: var(--wp--preset--color--seam-shadow);
+    }
+
+    // Alternative is text only (see blocks.css, same rule for the frontend). The
+    // editor's icon preview is injected inline per-block by editor.js, so this
+    // needs !important to win regardless of DOM order.
+    &.is-style-alternative .wp-block-button__link:after {
+        display: none !important;
     }
 
     &.seam-icon-before {
         .wp-block-button__link {
             flex-direction: row-reverse;
+        }
+    }
+
+    // Tablet + mobile: button goes full width, text stays centred, icon pins to the edge.
+    @media (max-width: 1024px) {
+        width: 100%;
+
+        .wp-block-button__link {
+            position: relative;
+            justify-content: center;
+            padding-right: calc(8px + var(--seam-icon-gap, 8px) + (2 * var(--seam-icon-padding, 17px)) + var(--seam-icon-size, 14px));
+
+            &:after {
+                position: absolute;
+                top: 50%;
+                right: 8px;
+                transform: translateY(-50%);
+            }
+        }
+
+        &.seam-icon-before .wp-block-button__link {
+            padding-right: 8px;
+            padding-left: calc(8px + var(--seam-icon-gap, 8px) + (2 * var(--seam-icon-padding, 17px)) + var(--seam-icon-size, 14px));
+
+            &:after {
+                right: auto;
+                left: 8px;
+            }
         }
     }
 }

@@ -4,6 +4,7 @@
 
 import { addFilter } from '@wordpress/hooks';
 import { allowedBlocks } from './allowed-blocks';
+import { DEFAULT_ICON_SVG } from './default-icon';
 
 /**
  * Add Iconic Button attribute to block settings
@@ -25,7 +26,7 @@ function seamIconicButtonAttribute( settings, name ) {
             ...settings.attributes,
             iconicButtonEnabled: {
                 type: 'boolean',
-                default: false
+                default: true
             },
             iconicButtonIconName: {
                 type: 'string',
@@ -37,11 +38,11 @@ function seamIconicButtonAttribute( settings, name ) {
             },
             iconicButtonIconType: {
                 type: 'string',
-                default: ''
+                default: 'custom'
             },
             iconicButtonCustomSvg: {
                 type: 'string',
-                default: ''
+                default: DEFAULT_ICON_SVG
             },
             iconicButtonIconPosition: {
                 type: 'string',
