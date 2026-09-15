@@ -52,7 +52,15 @@
       "Shell(node -e JSON.parse(require('fs').readFileSync('theme.json','utf8')); console.log('OK'))",
       "Shell(sed:*)",
       "Shell(node -e JSON.parse(require('fs').readFileSync('theme.json','utf8')); console.log('JSON OK'))",
-      "Shell(perl -pi -e s/var\\(--wp--preset--color--seam-neutral-darker, #1f2222\\)/var(--wp--preset--color--seam-neutral-dark, #545454)/g; s/var\\(--wp--preset--color--seam-neutral-darker, #242424\\)/var(--wp--preset--color--seam-neutral-dark, #545454)/g; assets/css/latest-insights.css assets/css/events-articles-grid.css assets/css/partners-grid.css)"
+      "Shell(perl -pi -e s/var\\(--wp--preset--color--seam-neutral-darker, #1f2222\\)/var(--wp--preset--color--seam-neutral-dark, #545454)/g; s/var\\(--wp--preset--color--seam-neutral-darker, #242424\\)/var(--wp--preset--color--seam-neutral-dark, #545454)/g; assets/css/latest-insights.css assets/css/events-articles-grid.css assets/css/partners-grid.css)",
+      "Shell(FAIL=0; for f in $(git ls-files '*.php'); do php -l \"$f\" >/dev/null 2>&1 || { echo \"FAIL: $f\"; php -l \"$f\"; FAIL=1; }; done; [ $FAIL -eq 0 ] && echo 'ALL PHP OK' && git status --short | head -25 && echo '---' && git status --short | wc -l)",
+      "Shell(perl -pi -e s/^Version: 0\\.0\\.11$/Version: 0.0.2/ style.css)",
+      "Shell(perl -pi -e s/^ \"version\": \"0\\.1\\.0\",$/\"version\": \"0.0.2\",/ package.json)",
+      "Shell(perl -pi -e s/^ \"version\": \"0\\.1\\.0\",$/\"version\": \"0.0.2\",/ if $. < 15 package-lock.json)",
+      "Shell(perl -pi -e s/^(\\s{8})\"version\": \"0\\.1\\.0\",$/$1\"version\": \"0.0.2\",/ if $. < 15 package-lock.json)",
+      "Shell(node -e JSON.parse(require('fs').readFileSync('package-lock.json','utf8')); JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('JSON OK'))",
+      "Shell(node -e JSON.parse(require('fs').readFileSync('package-lock.json','utf8')); console.log('lock OK'))",
+      "Shell(git add -A && git commit -m \"$(cat <<'EOF' Version 0.0.2: heading/body colors via presets, button variation tweaks - Headings use Gray Asparagus preset; default body/link text is Neutral Dark - Bump theme version to 0.0.2 (style.css, package.json, package-lock.json) - Outline/Alternative button variations: hover states and text-only icons - Remove all CPT shortcodes reference tooling remnants Co-authored-by: CommandCodeBot <noreply@commandcode.ai> EOF )\" && git push origin main && git log --oneline -2 && git status --short | wc -l)"
     ],
     "deny": [],
     "defaultMode": "default"

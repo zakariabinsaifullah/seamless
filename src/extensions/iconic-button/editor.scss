@@ -41,10 +41,11 @@
         background-color: var(--wp--preset--color--seam-shadow);
     }
 
-    // Alternative is text only (see blocks.css, same rule for the frontend). The
-    // editor's icon preview is injected inline per-block by editor.js, so this
-    // needs !important to win regardless of DOM order.
-    &.is-style-alternative .wp-block-button__link:after {
+    // Alternative and Outline are text only (see blocks.css, same rule for the
+    // frontend). The editor's icon preview is injected inline per-block by
+    // editor.js, so this needs !important to win regardless of DOM order.
+    &.is-style-alternative .wp-block-button__link:after,
+    &.is-style-outline .wp-block-button__link:after {
         display: none !important;
     }
 

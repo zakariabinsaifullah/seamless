@@ -130,8 +130,8 @@ header.wp-block-kadence-rowlayout::before {
  * are defined here rather than there.
  *
  * The default button (`styles.elements.button` in theme.json) has no hover
- * state on purpose, and neither does Alternative below. Outline is the only
- * variation with its own hover colours, mirrored in theme.json under
+ * state, and neither does Link below. Alternative and Outline do have their
+ * own hover colours, mirrored in theme.json under
  * `styles.blocks.core/button.variations`; keep the two in sync if either
  * changes.
  */
@@ -173,21 +173,28 @@ header.wp-block-kadence-rowlayout::before {
 
 /*
  * Outline — registered by core, not by the theme. Core ships its own CSS for
- * this variation (`border: 2px solid`, `color: currentColor`) wrapped in
- * `:root :where(...)`, so these plain class selectors outrank it.
- *
- * Intended for dark sections: the fill is transparent and the text is white.
+ * this variation (`border: 2px solid`, `color: currentColor`, and its own
+ * padding) wrapped in `:root :where(...)`, so these plain class selectors
+ * outrank it — including padding, restated below so it doesn't pick up
+ * core's baked-in value. Text only, no icon (same reasoning as Alternative
+ * above).
  */
 .wp-block-button.is-style-outline .wp-block-button__link {
     background-color: transparent;
     background-image: none;
-    border: 1px solid var(--wp--preset--color--seam-white);
-    color: var(--wp--preset--color--seam-white);
+    border: 1px solid #000000;
+    color: #000000;
+    padding: 4px 28px;
+    text-align: center;
 }
 
 .wp-block-button.is-style-outline .wp-block-button__link:hover {
-    border-color: #000000;
-    color: #000000;
+    border-color: var(--wp--preset--color--seam-shadow);
+    color: var(--wp--preset--color--seam-shadow);
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link .seam-icon-button-svg {
+    display: none !important;
 }
 
 /*

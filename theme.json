@@ -501,23 +501,31 @@
                         }
                     },
                     "outline": {
-                        ":hover": {
-                            "border": {
-                                "color": "#000000"
-                            },
-                            "color": {
-                                "text": "#000000"
-                            }
-                        },
                         "border": {
-                            "color": "var(--wp--preset--color--seam-white)",
+                            "color": "#000000",
                             "radius": "100px",
                             "style": "solid",
                             "width": "1px"
                         },
                         "color": {
                             "background": "transparent",
-                            "text": "var(--wp--preset--color--seam-white)"
+                            "text": "#000000"
+                        },
+                        "spacing": {
+                            "padding": {
+                                "bottom": "4px",
+                                "left": "28px",
+                                "right": "28px",
+                                "top": "4px"
+                            }
+                        },
+                        ":hover": {
+                            "border": {
+                                "color": "var(--wp--preset--color--seam-shadow)"
+                            },
+                            "color": {
+                                "text": "var(--wp--preset--color--seam-shadow)"
+                            }
                         }
                     }
                 }
