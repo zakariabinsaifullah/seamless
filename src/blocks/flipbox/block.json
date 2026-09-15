@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "seam/flipbox",
+    "version": "1.0.0",
+    "title": "Flip Box",
+    "category": "seam",
+    "icon": "image-flip-horizontal",
+    "description": "A card with a front and back face that flips on hover or click.",
+    "keywords": ["flip box", "flip card", "card", "hover", "3d"],
+    "example": {},
+    "supports": {
+        "html": false,
+        "align": ["wide", "full"],
+        "anchor": true
+    },
+    "attributes": {
+        "selectSide": {
+            "type": "string",
+            "default": "front"
+        },
+        "triggerType": {
+            "type": "string",
+            "default": "hover"
+        },
+        "flipEffect": {
+            "type": "string",
+            "default": "flip-box_animation_style-3"
+        }
+    },
+    "textdomain": "seamless",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "viewScript": "file:./view.js"
+}
