@@ -1,0 +1,120 @@
+/* =============================================================================
+   Seamless docs page — Appearance → Seamless (inc/docs.php)
+
+   Built on the core admin styles (.wrap, .widefat, .button) so it stays in step
+   with whatever admin colour scheme the user has.
+   ============================================================================= */
+
+.seam-docs {
+    max-width: 900px;
+}
+
+.seam-docs-intro {
+    font-size: 14px;
+    color: #50575e;
+    margin: 4px 0 24px;
+}
+
+.seam-docs-section {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 4px 24px 24px;
+    margin-bottom: 24px;
+}
+
+.seam-docs-section h2 {
+    font-size: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.seam-docs-section h2 code {
+    font-size: 14px;
+    font-weight: 400;
+    background: #f0f0f1;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-left: 6px;
+}
+
+.seam-docs-section h3 {
+    font-size: 14px;
+    margin: 28px 0 10px;
+}
+
+/* ── Copyable snippet ──────────────────────────────────────────────────────── */
+
+.seam-docs-code {
+    margin: 12px 0 16px;
+}
+
+.seam-docs-code__label {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #50575e;
+}
+
+.seam-docs-code__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.seam-docs-code__row code {
+    flex: 1;
+    min-width: 260px;
+    background: #1d2327;
+    color: #7dd3fc;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    /* The snippet is meant to be copied, so select the whole thing at once. */
+    user-select: all;
+}
+
+/* ── Attribute table ───────────────────────────────────────────────────────── */
+
+.seam-docs-table {
+    border-radius: 4px;
+}
+
+.seam-docs-table th,
+.seam-docs-table td {
+    padding: 10px 12px;
+    vertical-align: top;
+}
+
+.seam-docs-table td:first-child,
+.seam-docs-table td:nth-child(2) {
+    white-space: nowrap;
+}
+
+.seam-docs-table code {
+    background: #f0f0f1;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.seam-docs-empty {
+    color: #8c8f94;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* ── Lists and notes ───────────────────────────────────────────────────────── */
+
+.seam-docs-list {
+    list-style: disc;
+    margin: 0 0 12px 20px;
+}
+
+.seam-docs-note {
+    background: #f0f6fc;
+    border-left: 4px solid #2271b1;
+    border-radius: 0 4px 4px 0;
+    padding: 2px 16px;
+    margin-top: 20px;
+}

@@ -11,22 +11,31 @@
 // Asset enqueueing
 // =============================================================================
 
-if ( ! function_exists( 'seam_posts_grid_enqueue_assets' ) ) :
-	function seam_posts_grid_enqueue_assets() {
-		$version = wp_get_theme()->get( 'Version' );
-
+if ( ! function_exists( 'seam_posts_grid_enqueue_styles' ) ) :
+	/**
+	 * Card and grid styles. Split out from the script so [top_post], which needs
+	 * the card styling but none of the filtering behaviour, can ask for the
+	 * stylesheet on its own.
+	 */
+	function seam_posts_grid_enqueue_styles() {
 		wp_enqueue_style(
 			'seam-posts-grid',
 			get_theme_file_uri( 'assets/css/shortcode.css' ),
 			array(),
-			$version
+			wp_get_theme()->get( 'Version' )
 		);
+	}
+endif;
+
+if ( ! function_exists( 'seam_posts_grid_enqueue_assets' ) ) :
+	function seam_posts_grid_enqueue_assets() {
+		seam_posts_grid_enqueue_styles();
 
 		wp_enqueue_script(
 			'seam-posts-grid',
 			get_theme_file_uri( 'assets/js/shortcode.js' ),
 			array(),
-			$version,
+			wp_get_theme()->get( 'Version' ),
 			true
 		);
 	}
@@ -41,20 +50,41 @@ if ( ! function_exists( 'seam_posts_grid_render_post_item' ) ) :
 	/**
 	 * Renders a single post card: image → meta (category, date + reading time) → title → excerpt → read more.
 	 *
+	 * Shared by all three shortcodes; the parts that differ between them are
+	 * switched off here rather than hidden with CSS, so a card never pays for
+	 * markup — or an image request — it doesn't show.
+	 *
 	 * @param int    $post_id  Post ID.
 	 * @param string $taxonomy Taxonomy used for the category label.
+	 * @param array  $args     {
+	 *     Optional. What this card includes.
+	 *
+	 *     @type string $heading_tag Heading level for the title. Default 'h3' —
+	 *                               the grid has its own h2 above the cards.
+	 *     @type bool   $image       Whether to render the featured image. Default true.
+	 *     @type bool   $read_time   Whether to render the reading time. Default true.
+	 * }
 	 */
-	function seam_posts_grid_render_post_item( $post_id, $taxonomy = 'category' ) {
+	function seam_posts_grid_render_post_item( $post_id, $taxonomy = 'category', $args = array() ) {
 		$post = get_post( $post_id );
 		if ( ! $post ) {
 			return '';
 		}
 
+		$args = wp_parse_args(
+			$args,
+			array(
+				'heading_tag' => 'h3',
+				'image'       => true,
+				'read_time'   => true,
+			)
+		);
+
 		$permalink = get_permalink( $post_id );
 		$title     = get_the_title( $post_id );
 		$excerpt   = get_the_excerpt( $post_id );
 		$date      = get_the_date( 'F Y', $post_id );
-		$thumbnail = has_post_thumbnail( $post_id )
+		$thumbnail = ( $args['image'] && has_post_thumbnail( $post_id ) )
 			? get_the_post_thumbnail( $post_id, 'medium_large', array( 'loading' => 'lazy' ) )
 			: '';
 
@@ -63,7 +93,7 @@ if ( ! function_exists( 'seam_posts_grid_render_post_item' ) ) :
 		$cat_name = ( $terms && ! is_wp_error( $terms ) ) ? $terms[0]->name : '';
 
 		// Reading time: word count / 200 wpm, rounded up to at least 1 minute.
-		$word_count   = str_word_count( wp_strip_all_tags( $post->post_content ) );
+		$word_count   = $args['read_time'] ? str_word_count( wp_strip_all_tags( $post->post_content ) ) : 0;
 		$reading_time = max( 1, (int) ceil( $word_count / 200 ) );
 
 		$html = '<article class="ipg-card">';
@@ -82,12 +112,14 @@ if ( ! function_exists( 'seam_posts_grid_render_post_item' ) ) :
 			$html .= '<span class="ipg-card__category">' . esc_html( $cat_name ) . '</span>';
 		}
 		$html .= '<span class="ipg-card__date">' . esc_html( $date ) . '</span>';
-		/* translators: %d: reading time in minutes. */
-		$html .= '<span class="ipg-card__read-time">' . sprintf( esc_html__( '%d min read', 'seamless' ), $reading_time ) . '</span>';
+		if ( $args['read_time'] ) {
+			/* translators: %d: reading time in minutes. */
+			$html .= '<span class="ipg-card__read-time">' . sprintf( esc_html__( '%d min read', 'seamless' ), $reading_time ) . '</span>';
+		}
 		$html .= '</div>';
 
-		// h3: sits under the grid's own h2 heading (the `title` attribute).
-		$html .= '<h3 class="ipg-card__title"><a href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a></h3>';
+		$heading_tag = in_array( $args['heading_tag'], array( 'h2', 'h3', 'h4' ), true ) ? $args['heading_tag'] : 'h3';
+		$html       .= '<' . $heading_tag . ' class="ipg-card__title"><a href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a></' . $heading_tag . '>';
 
 		if ( $excerpt ) {
 			$html .= '<p class="ipg-card__excerpt">' . esc_html( $excerpt ) . '</p>';
@@ -549,3 +581,149 @@ if ( ! function_exists( 'seam_posts_tabs_shortcode' ) ) :
 	}
 endif;
 add_shortcode( 'seam_posts_tabs', 'seam_posts_tabs_shortcode' );
+
+
+// =============================================================================
+// Top post
+// =============================================================================
+
+if ( ! function_exists( 'seam_top_post_shortcode' ) ) :
+	/**
+	 * [top_post id="123" post_type="post"]
+	 *
+	 * Renders one post as a single feature card — the same card the grid uses,
+	 * scaled up: full-bleed 2:1 image, no panel behind the text, larger heading.
+	 *
+	 * `id`        — the post to show. Omit it to fall back to the most recent
+	 *               published post of `post_type`.
+	 * `post_type` — only used for that fallback; an explicit `id` wins regardless
+	 *               of its post type.
+	 */
+	function seam_top_post_shortcode( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'id'        => '',
+				'post_type' => 'post',
+			),
+			$atts,
+			'top_post'
+		);
+
+		$post_id   = absint( $atts['id'] );
+		$post_type = sanitize_key( $atts['post_type'] );
+
+		if ( ! post_type_exists( $post_type ) ) {
+			$post_type = 'post';
+		}
+
+		if ( ! $post_id ) {
+			$latest = get_posts(
+				array(
+					'post_type'      => $post_type,
+					'posts_per_page' => 1,
+					'post_status'    => 'publish',
+					'fields'         => 'ids',
+				)
+			);
+
+			$post_id = $latest ? (int) $latest[0] : 0;
+		}
+
+		if ( ! $post_id || 'publish' !== get_post_status( $post_id ) ) {
+			// Silent for visitors; anyone who can edit gets told why it's blank.
+			return current_user_can( 'edit_posts' )
+				? '<p class="ipg-no-posts">' . esc_html__( 'Top post: no published post found for that ID.', 'seamless' ) . '</p>'
+				: '';
+		}
+
+		$taxonomy = seam_posts_grid_resolve_taxonomy( get_post_type( $post_id ) );
+
+		seam_posts_grid_enqueue_styles();
+
+		return '<div class="seam-top-post">'
+			. seam_posts_grid_render_post_item( $post_id, $taxonomy, array( 'heading_tag' => 'h2' ) )
+			. '</div>';
+	}
+endif;
+add_shortcode( 'top_post', 'seam_top_post_shortcode' );
+
+
+// =============================================================================
+// Post list
+// =============================================================================
+
+if ( ! function_exists( 'seam_post_list_shortcode' ) ) :
+	/**
+	 * [post_list ids="12,34,56"]
+	 *
+	 * A stack of hand-picked posts. Same card as the rest, minus the image and
+	 * the reading time: category and date, title, excerpt, link — on a cream
+	 * panel. Cards appear in the order the IDs are given.
+	 *
+	 * `ids` — one or more post IDs, comma separated.
+	 */
+	function seam_post_list_shortcode( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'ids' => '',
+			),
+			$atts,
+			'post_list'
+		);
+
+		$ids = array_values(
+			array_unique(
+				array_filter(
+					array_map( 'absint', explode( ',', (string) $atts['ids'] ) )
+				)
+			)
+		);
+
+		if ( empty( $ids ) ) {
+			return current_user_can( 'edit_posts' )
+				? '<p class="ipg-no-posts">' . esc_html__( 'Post list: add one or more post IDs, e.g. [post_list ids="12,34"].', 'seamless' ) . '</p>'
+				: '';
+		}
+
+		$query = new WP_Query(
+			array(
+				'post_type'           => 'any',
+				'post__in'            => $ids,
+				// Honour the order the IDs were written in, not the publish date.
+				'orderby'             => 'post__in',
+				'posts_per_page'      => count( $ids ),
+				'post_status'         => 'publish',
+				'ignore_sticky_posts' => true,
+			)
+		);
+
+		if ( ! $query->have_posts() ) {
+			return current_user_can( 'edit_posts' )
+				? '<p class="ipg-no-posts">' . esc_html__( 'Post list: none of those IDs match a published post.', 'seamless' ) . '</p>'
+				: '';
+		}
+
+		seam_posts_grid_enqueue_styles();
+
+		$html = '<div class="seam-post-list">';
+
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$html .= seam_posts_grid_render_post_item(
+				get_the_ID(),
+				seam_posts_grid_resolve_taxonomy( get_post_type() ),
+				array(
+					'image'     => false,
+					'read_time' => false,
+				)
+			);
+		}
+
+		$html .= '</div>';
+
+		wp_reset_postdata();
+
+		return $html;
+	}
+endif;
+add_shortcode( 'post_list', 'seam_post_list_shortcode' );

@@ -192,6 +192,63 @@
 }
 
 /* =============================================================================
+   Feature cards — [top_post] and [post_list]
+
+   Both are the grid card scaled up: larger meta and heading, 24px of padding,
+   and a meta row grouped to the left rather than spread edge to edge, which
+   would strand the items at these widths. Everything not restated here
+   (colours, excerpt, read link, hover) is inherited from the card rules above.
+   ============================================================================= */
+
+.seam-top-post .ipg-card__meta-row,
+.seam-post-list .ipg-card__meta-row {
+    justify-content: flex-start;
+    gap: 8px 32px;
+    margin-bottom: 24px;
+}
+
+.seam-top-post .ipg-card .ipg-card__category,
+.seam-top-post .ipg-card .ipg-card__date,
+.seam-top-post .ipg-card .ipg-card__read-time,
+.seam-post-list .ipg-card .ipg-card__category,
+.seam-post-list .ipg-card .ipg-card__date {
+    font-size: var(--wp--preset--font-size--seam-small, 14px);
+}
+
+.seam-top-post .ipg-card .ipg-card__title,
+.seam-post-list .ipg-card .ipg-card__title {
+    margin-bottom: 20px;
+    font-size: var(--wp--preset--font-size--seam-heading-five, 28px);
+}
+
+.seam-top-post .ipg-card__body,
+.seam-post-list .ipg-card__body {
+    padding: 24px;
+}
+
+/* ── [top_post] — full-bleed image, text straight on the page ─────────────── */
+
+.seam-top-post .ipg-card__image {
+    aspect-ratio: 2 / 1;
+}
+
+.seam-top-post .ipg-card__body {
+    background: transparent;
+}
+
+/* ── [post_list] — stacked panels, no image ───────────────────────────────── */
+
+.seam-post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.seam-post-list .ipg-card__body {
+    background: #f3f0e7;
+}
+
+/* =============================================================================
    Footer — result count + pagination
    ============================================================================= */
 

@@ -36,6 +36,12 @@ require_once get_theme_file_path( 'inc/form.php' );       // Slide-in form panel
 // ── Shortcodes ─────────────────────────────────────────────────────────────────
 require_once get_theme_file_path( 'inc/shortcode.php' ); // Posts grid shortcode
 
+// ── Documentation ──────────────────────────────────────────────────────────────
+require_once get_theme_file_path( 'inc/docs.php' );      // Appearance → Seamless
+
+// ── Admin UI ───────────────────────────────────────────────────────────────────
+require_once get_theme_file_path( 'inc/admin.php' );     // Post ID column
+
 
 /**
  * Set WordPress excerpt length to 25 words.
