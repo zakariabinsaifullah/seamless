@@ -85,7 +85,6 @@ header.wp-block-kadence-rowlayout::before {
 .wp-block-button.is-style-link .wp-block-button__link {
     display: inline-flex !important;
     align-items: center;
-    gap: 8px;
     text-decoration: none;
 }
 
@@ -207,9 +206,9 @@ header.wp-block-kadence-rowlayout::before {
  * Alternative above: the variation's `background: transparent` in theme.json
  * is not emitted, so it is restated here.
  *
- * The trailing arrow is painted as a mask filled with `currentColor` rather
- * than a coloured background-image, so it inherits the link colour and follows
- * it on hover without needing a second copy of the icon.
+ * Underlined with a 1px bottom border rather than `text-decoration`, so the
+ * rule sits clear of the descenders. `currentColor` keeps it in step with the
+ * link colour, including the hover swap below.
  *
  * Also resets `min-height` back to auto: the default button's 64px minimum
  * (`styles.elements.button` in theme.json) would otherwise stretch this into
@@ -220,25 +219,14 @@ header.wp-block-kadence-rowlayout::before {
     background-image: none;
     color: #538988;
     min-height: auto;
+    border-bottom: 1px solid currentColor;
 }
 
-/* Every button gets the default icon box (inc/extensions.php, iconic-button extension),
-   but Link already paints its own trailing arrow via ::after above — skip the box so it
-   doesn't show twice. */
+/* Backstop: only the default button gets the icon box (inc/extensions.php,
+   iconic-button extension), so hide any box left in markup saved before that
+   exclusion existed — Link is a plain text link, no icon. */
 .wp-block-button.is-style-link .wp-block-button__link .seam-icon-button-svg {
     display: none !important;
-}
-
-.wp-block-button.is-style-link .wp-block-button__link::after {
-    content: '';
-    width: 14px;
-    height: 13px;
-    flex-shrink: 0;
-    background-color: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='13' viewBox='0 0 14 13' fill='none'%3E%3Cpath d='m13.75 6.625-5.5 5.25c-.312.281-.781.281-1.062-.031s-.282-.781.03-1.063l4.157-3.969H.75a.72.72 0 0 1-.75-.75.74.74 0 0 1 .75-.75h10.625L7.219 1.376A.746.746 0 0 1 7.187.313.746.746 0 0 1 8.25.28l5.5 5.25c.156.157.25.344.25.532a.78.78 0 0 1-.25.562' fill='%23000'/%3E%3C/svg%3E")
-        no-repeat center / contain;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='13' viewBox='0 0 14 13' fill='none'%3E%3Cpath d='m13.75 6.625-5.5 5.25c-.312.281-.781.281-1.062-.031s-.282-.781.03-1.063l4.157-3.969H.75a.72.72 0 0 1-.75-.75.74.74 0 0 1 .75-.75h10.625L7.219 1.376A.746.746 0 0 1 7.187.313.746.746 0 0 1 8.25.28l5.5 5.25c.156.157.25.344.25.532a.78.78 0 0 1-.25.562' fill='%23000'/%3E%3C/svg%3E")
-        no-repeat center / contain;
 }
 
 .wp-block-button.is-style-link .wp-block-button__link:hover {

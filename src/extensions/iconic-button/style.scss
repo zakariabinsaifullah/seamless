@@ -1,10 +1,10 @@
-// Alternative/Outline never get the `seam-icon-button` class going forward (see
-// inc/extensions.php/save.js), but the `:not()` below is a defensive backstop —
-// e.g. content saved before that exclusion existed still has the class baked
-// into its stored HTML until it's re-saved, and without this it would keep
-// picking up this block's gap/padding-right (reserved for an icon it doesn't
-// render), showing up as unwanted space on the right.
-.wp-block-button.seam-icon-button:not(.is-style-alternative):not(.is-style-outline) {
+// Only the default (fill) button gets the `seam-icon-button` class going
+// forward (see inc/extensions.php/save.js), but the `:not()` below is a
+// defensive backstop — e.g. content saved before that exclusion existed still
+// has the class baked into its stored HTML until it's re-saved, and without
+// this it would keep picking up this block's gap/padding-right (reserved for an
+// icon it doesn't render), showing up as unwanted space on the right.
+.wp-block-button.seam-icon-button:not(.is-style-alternative):not(.is-style-outline):not(.is-style-link) {
     .wp-block-button__link {
         display: flex !important;
         align-items: center;
@@ -42,11 +42,9 @@
         }
     }
 
-    // Default button only (Alternative/Outline never get this class at all —
-    // see inc/extensions.php/save.js; Link sets its own icon treatment):
-    // invert the icon chip to match the button's hover fill/text swap in
+    // Invert the icon chip to match the button's hover fill/text swap in
     // theme.json (styles.elements.button:hover).
-    &:not(.is-style-link) .wp-block-button__link:hover .seam-icon-button-svg {
+    .wp-block-button__link:hover .seam-icon-button-svg {
         background-color: var(--wp--preset--color--seam-shadow);
     }
 

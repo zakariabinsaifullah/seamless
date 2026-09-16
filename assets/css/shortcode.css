@@ -1,5 +1,15 @@
 /* =============================================================================
    Posts Grid Shortcode — shortcode.css
+
+   Colours and spacing are taken from the insights grid design. Three of the
+   four colours map onto theme presets (used below with the literal as
+   fallback); the greys and creams that don't have a preset are literal:
+
+     #f7f6f3  card panel      #f3f0e7  resting tab / page chip
+     #515353  excerpt text    #d2d4d1  footer rule
+
+   The vertical rhythm between the header, the grid rows and the footer is a
+   consistent 56px.
    ============================================================================= */
 
 /* Wrapper */
@@ -13,45 +23,58 @@
 }
 
 /* =============================================================================
-   Filter Nav
+   Header — heading + filter tabs
    ============================================================================= */
 
+.ipg-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 56px;
+}
+
+/* Size, family and weight come from `styles.elements.h2` in theme.json (52px
+   Quarto Light); only the colour differs from the global heading colour. */
+.ipg-wrapper .ipg-heading {
+    margin: 0;
+    color: var(--wp--preset--color--seam-gray-asparagus-dark, #304235);
+}
+
+/* Pushes the tabs right when the heading is omitted (title=""). */
 .ipg-nav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 50px;
-    justify-content: center;
+    gap: 10px;
+    margin-left: auto;
 }
 
-.ipg-filter-btn {
+.ipg-nav .ipg-filter-btn {
     cursor: pointer;
-    background: transparent;
-    border: 1px solid #253b2f;
-    font-size: 18px;
+    background: #f3f0e7;
+    border: none;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: var(--wp--preset--font-size--seam-small, 14px);
     font-weight: 400;
-    color: #000000;
-    padding: 10px 24px;
-    border-radius: 100px;
-    transition: all 0.25s ease;
-    line-height: 1.2;
+    line-height: 1.4;
+    color: var(--wp--preset--color--seam-gray-asparagus-dark, #304235);
+    padding: 7px 10px;
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease;
 }
 
-.ipg-filter-btn:hover {
-    background: #253b2f;
+.ipg-nav .ipg-filter-btn:hover {
+    background: var(--wp--preset--color--seam-shadow, #7f7750);
     color: #ffffff;
 }
 
-.ipg-filter-btn.active {
-    background: #253b2f;
+.ipg-nav .ipg-filter-btn.active {
+    background: var(--wp--preset--color--seam-shadow, #7f7750);
     color: #ffffff;
-    font-weight: 400;
-}
-
-.ipg-filter-btn.active:hover {
-    background: #253b2f;
-    color: #ffffff !important;
 }
 
 /* =============================================================================
@@ -62,34 +85,12 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     column-gap: 24px;
-    row-gap: 24px;
+    row-gap: 56px;
 }
 
-@media (max-width: 900px) {
-    .ipg-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 560px) {
-    .ipg-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .ipg-nav {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .ipg-nav .ipg-filter-btn {
-        width: 100%;
-        padding: 16px 24px;
-    }
-}
-
-.ipg-no-posts {
-    color: #838484;
-    font-size: 15px;
+.ipg-posts .ipg-no-posts {
+    color: #515353;
+    font-size: var(--wp--preset--font-size--seam-medium, 16px);
 }
 
 /* =============================================================================
@@ -99,38 +100,12 @@
 .ipg-card {
     display: flex;
     flex-direction: column;
-    border: 1px solid #e8ecf0;
-    border-radius: 20px;
-    padding: 16px;
-    position: relative;
-    transition: border-color 0.2s ease;
-}
-
-/* Gradient-one border ring on hover (masked ::before, same as kadence section). */
-.ipg-card:hover::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    padding: 2px;
-    border-radius: inherit;
-    background: var(--wp--preset--gradient--seam-gradient-one);
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
 }
 
 .ipg-card__image {
     display: block;
     overflow: hidden;
-    border-radius: 12px;
-    aspect-ratio: 4 / 3;
-    margin-bottom: 16px;
+    aspect-ratio: 7 / 5;
 }
 
 .ipg-card__image img {
@@ -149,169 +124,219 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    background: #f7f6f3;
+    padding: 24px 16px;
 }
 
-/* Meta row: category · date + reading time */
+/* Meta row: category, date, reading time — spread edge to edge, no separators */
 .ipg-card__meta-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.ipg-card__category {
-    font-size: 14px;
-    font-weight: 500;
-    color: #253b2f;
-    line-height: 1.4;
-}
-
-.ipg-card__meta {
-    display: flex;
-    align-items: center;
     gap: 8px;
+    margin-bottom: 20px;
 }
 
-.ipg-card__date,
-.ipg-card__read-time {
-    font-size: 14px;
-    color: #838484;
+.ipg-card .ipg-card__category,
+.ipg-card .ipg-card__date,
+.ipg-card .ipg-card__read-time {
+    font-size: var(--wp--preset--font-size--seam-x-small, 12px);
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--wp--preset--color--seam-shadow, #7f7750);
 }
 
-.ipg-card__sep {
-    font-size: 14px;
-    color: #838484;
-}
-
-.ipg-card__title {
+.ipg-card .ipg-card__title {
     margin: 0 0 16px;
-    font-size: 20px;
-    color: #080046;
+    font-size: var(--wp--preset--font-size--seam-heading-six, 22px);
+    color: var(--wp--preset--color--seam-gray-asparagus-dark, #304235);
 }
 
-.ipg-card__title a {
+.ipg-card .ipg-card__title a {
     text-decoration: none;
     color: inherit;
     transition: color 0.2s ease;
 }
 
-.ipg-card__title a:hover {
-    color: #253b2f;
+.ipg-card .ipg-card__title a:hover {
+    color: var(--wp--preset--color--seam-shadow, #7f7750);
 }
 
-.ipg-card__excerpt {
-    margin: 0 0 16px;
+.ipg-card .ipg-card__excerpt {
+    margin: 0 0 20px;
+    font-size: var(--wp--preset--font-size--seam-medium, 16px);
+    line-height: 1.5;
+    color: #515353;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* Read more button */
-.ipg-card__read-more {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+/* Read more link */
+.ipg-card .ipg-card__read-more {
     margin-top: auto;
-    font-size: 14px;
-    font-weight: 500;
-    color: #253b2f;
-    text-decoration: none;
-    transition: color 0.2s ease, gap 0.2s ease;
     align-self: flex-start;
+    font-size: var(--wp--preset--font-size--seam-large, 18px);
+    line-height: 1.5;
+    color: var(--wp--preset--color--seam-shadow, #7f7750);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s ease;
 }
 
-.ipg-card__read-more svg {
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-}
-
-.ipg-card__read-more:hover {
-    color: #253b2f;
-    gap: 12px;
-}
-
-.ipg-card__read-more:hover svg {
-    transform: translateX(2px);
-}
-
-.ipg-card__avatar {
-    flex-shrink: 0;
-    line-height: 0;
-}
-
-.ipg-card__avatar-img {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
+.ipg-card .ipg-card__read-more:hover {
+    color: var(--wp--preset--color--seam-gray-asparagus-dark, #304235);
 }
 
 /* =============================================================================
-   Pagination
+   Footer — result count + pagination
    ============================================================================= */
 
+.ipg-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 56px;
+    padding-top: 56px;
+    border-top: 1px solid #d2d4d1;
+}
+
+/* No results (initially or after a filter): the count is what the footer hangs
+   on, so drop the whole thing rather than leaving a bare rule. The markup stays
+   in the DOM either way — the AJAX response refills it. */
+.ipg-footer:not(:has(.ipg-count)) {
+    display: none;
+}
+
+.ipg-footer .ipg-count {
+    margin: 0;
+    font-size: var(--wp--preset--font-size--seam-medium, 16px);
+    line-height: 1.5;
+    color: var(--wp--preset--color--seam-shadow, #7f7750);
+}
+
+/* Keeps the pagination hard right when the count is empty. */
 .ipg-pagination-wrap {
-    margin-top: 50px;
+    margin-left: auto;
 }
 
 .ipg-pagination {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
+    gap: 10px;
 }
 
-.ipg-page-btn {
+.ipg-pagination .ipg-page-btn {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 6px;
-    background: #ffffff;
-    border: 1px solid #d8d8d8;
-    border-radius: 8px;
-    color: #191919;
-    font-size: 14px;
-    font-weight: 500;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    background: #f3f0e7;
+    border: none;
+    border-radius: 2px;
+    color: var(--wp--preset--color--seam-gray-asparagus-dark, #304235);
+    font-family: inherit;
+    font-size: var(--wp--preset--font-size--seam-small, 14px);
+    font-weight: 400;
     line-height: 1;
-    transition: all 0.2s ease;
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease;
 }
 
-.ipg-page-btn:hover:not(:disabled) {
-    border-color: #253b2f;
-    color: #253b2f;
-}
-
-.ipg-page-btn.active {
-    background: #253b2f;
-    border-color: #253b2f;
+.ipg-pagination .ipg-page-btn:hover {
+    background: var(--wp--preset--color--seam-shadow, #7f7750);
     color: #ffffff;
 }
 
-.ipg-page-btn:disabled {
-    cursor: default;
-    opacity: 0.35;
+.ipg-pagination .ipg-page-btn.active {
+    background: var(--wp--preset--color--seam-shadow, #7f7750);
+    color: #ffffff;
 }
 
-.ipg-page-btn.ipg-page-arrow svg {
-    display: block;
-    pointer-events: none;
-}
-
-.ipg-page-ellipsis {
+.ipg-pagination .ipg-page-ellipsis {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    color: #b2b2b2;
-    font-size: 14px;
+    min-width: 34px;
+    height: 34px;
+    color: var(--wp--preset--color--seam-shadow, #7f7750);
+    font-size: var(--wp--preset--font-size--seam-small, 14px);
     user-select: none;
     letter-spacing: 0.05em;
+}
+
+/* =============================================================================
+   Responsive
+   ============================================================================= */
+
+@media (max-width: 1024px) {
+    .ipg-grid {
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 40px;
+    }
+
+    .ipg-header,
+    .ipg-footer {
+        margin-bottom: 40px;
+    }
+
+    .ipg-footer {
+        margin-top: 40px;
+        padding-top: 40px;
+    }
+}
+
+@media (max-width: 782px) {
+    .ipg-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .ipg-nav {
+        margin-left: 0;
+    }
+
+    /* Tabs scroll sideways rather than stacking into a tall block. */
+    .ipg-nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        max-width: 100%;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+
+    .ipg-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ipg-nav .ipg-filter-btn {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 560px) {
+    .ipg-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ipg-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .ipg-pagination-wrap {
+        margin-left: 0;
+    }
 }

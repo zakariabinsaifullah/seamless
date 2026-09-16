@@ -36,8 +36,8 @@ $header_image = get_template_directory_uri() . '/assets/images/home-hero.webp';
 <!-- /wp:kadence/advancedheading -->
 
 <!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-gradient-fill"} -->
-<div class="wp-block-button is-style-gradient-fill"><a class="wp-block-button__link wp-element-button" href="#">Schedule a Consultation</a></div>
+<div class="wp-block-buttons"><!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#">Schedule a Consultation</a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div></div>
 <!-- /wp:kadence/column -->

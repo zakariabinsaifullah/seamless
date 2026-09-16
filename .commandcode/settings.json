@@ -60,7 +60,8 @@
       "Shell(perl -pi -e s/^(\\s{8})\"version\": \"0\\.1\\.0\",$/$1\"version\": \"0.0.2\",/ if $. < 15 package-lock.json)",
       "Shell(node -e JSON.parse(require('fs').readFileSync('package-lock.json','utf8')); JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('JSON OK'))",
       "Shell(node -e JSON.parse(require('fs').readFileSync('package-lock.json','utf8')); console.log('lock OK'))",
-      "Shell(git add -A && git commit -m \"$(cat <<'EOF' Version 0.0.2: heading/body colors via presets, button variation tweaks - Headings use Gray Asparagus preset; default body/link text is Neutral Dark - Bump theme version to 0.0.2 (style.css, package.json, package-lock.json) - Outline/Alternative button variations: hover states and text-only icons - Remove all CPT shortcodes reference tooling remnants Co-authored-by: CommandCodeBot <noreply@commandcode.ai> EOF )\" && git push origin main && git log --oneline -2 && git status --short | wc -l)"
+      "Shell(git add -A && git commit -m \"$(cat <<'EOF' Version 0.0.2: heading/body colors via presets, button variation tweaks - Headings use Gray Asparagus preset; default body/link text is Neutral Dark - Bump theme version to 0.0.2 (style.css, package.json, package-lock.json) - Outline/Alternative button variations: hover states and text-only icons - Remove all CPT shortcodes reference tooling remnants Co-authored-by: CommandCodeBot <noreply@commandcode.ai> EOF )\" && git push origin main && git log --oneline -2 && git status --short | wc -l)",
+      "Shell(git add style.css && git commit -F - <<'EOF' Version 0.0.4: update Kadence navigation link styles Remove sub-menu hover underline styles, add letter-spacing to top-level nav links, and bump theme version. Co-authored-by: CommandCodeBot <noreply@commandcode.ai> EOF git push origin main)"
     ],
     "deny": [],
     "defaultMode": "default"

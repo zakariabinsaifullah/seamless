@@ -99,6 +99,73 @@ function seam_form_panel_html() {
 	<?php
 }
 
+// ── Gravity Forms submit button ────────────────────────────────────────────────
+
+add_filter( 'gform_submit_button', 'seam_gform_submit_button', 10, 2 );
+
+/**
+ * Renders the Gravity Forms submit button as the theme's default block button.
+ *
+ * Gravity Forms ships the submit as `<input type="submit">`, which can hold
+ * neither child elements nor a `::after` — so it can't carry the arrow icon the
+ * default button ends with. The input is rebuilt here as a `<button>` with the
+ * same attributes (id, classes and GF's `onclick` submission handler are all
+ * preserved, so GF's own JS still finds and drives it), wrapped in the same
+ * `.wp-block-button.seam-icon-button` markup a core button block produces.
+ *
+ * Carrying those classes means the button inherits the block button's layout,
+ * icon chip and tablet/mobile treatment from the iconic-button stylesheet
+ * (src/extensions/iconic-button/style.scss) for free; colours, typography and
+ * metrics are restated in assets/css/form-panel.css, which has to out-specify
+ * Gravity Forms' own button CSS.
+ *
+ * Image buttons (`<input type="image">`) are left exactly as Gravity Forms
+ * rendered them.
+ *
+ * @param string $button The button HTML.
+ * @param array  $form   The current form.
+ * @return string Button HTML.
+ */
+function seam_gform_submit_button( $button, $form ) {
+	$processor = new WP_HTML_Tag_Processor( $button );
+
+	if ( ! $processor->next_tag( array( 'tag_name' => 'INPUT' ) ) || 'submit' !== $processor->get_attribute( 'type' ) ) {
+		return $button;
+	}
+
+	$label = $processor->get_attribute( 'value' );
+
+	// The block element classes carry the theme's button styling; Gravity Forms'
+	// own `gform_button button` classes come along with the copied attributes.
+	$classes = trim( ( $processor->get_attribute( 'class' ) ?? '' ) . ' wp-block-button__link wp-element-button' );
+	$attrs   = sprintf( ' class="%s"', esc_attr( $classes ) );
+
+	foreach ( $processor->get_attribute_names_with_prefix( '' ) as $name ) {
+		// `type` is restated below, `value` becomes the button's text content,
+		// and `class` is handled above.
+		if ( in_array( $name, array( 'type', 'value', 'class' ), true ) ) {
+			continue;
+		}
+
+		$value = $processor->get_attribute( $name );
+
+		if ( true === $value ) {
+			$attrs .= ' ' . esc_attr( $name );
+		} elseif ( is_string( $value ) ) {
+			$attrs .= sprintf( ' %s="%s"', esc_attr( $name ), esc_attr( $value ) );
+		}
+	}
+
+	$icon = '<span class="seam-icon-button-svg">' . wp_kses( seam_iconic_button_default_svg(), seam_iconic_button_svg_kses_args() ) . '</span>';
+
+	return sprintf(
+		'<div class="wp-block-button seam-icon-button seam-gform-button"><button type="submit"%1$s>%2$s%3$s</button></div>',
+		$attrs,
+		esc_html( $label ),
+		$icon
+	);
+}
+
 // ── Register settings ──────────────────────────────────────────────────────────
 
 add_action( 'admin_init', 'seam_form_register_settings' );

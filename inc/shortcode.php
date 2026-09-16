@@ -50,14 +50,11 @@ if ( ! function_exists( 'seam_posts_grid_render_post_item' ) ) :
 			return '';
 		}
 
-		$permalink   = get_permalink( $post_id );
-		$title       = get_the_title( $post_id );
-		$excerpt     = get_the_excerpt( $post_id );
-		$date        = get_the_date( 'F j, Y', $post_id );
-		$author_id   = (int) $post->post_author;
-		$author_name = get_the_author_meta( 'display_name', $author_id );
-		$avatar      = get_avatar( $author_id, 32, '', esc_attr( $author_name ), array( 'class' => 'ipg-card__avatar-img' ) );
-		$thumbnail   = has_post_thumbnail( $post_id )
+		$permalink = get_permalink( $post_id );
+		$title     = get_the_title( $post_id );
+		$excerpt   = get_the_excerpt( $post_id );
+		$date      = get_the_date( 'F Y', $post_id );
+		$thumbnail = has_post_thumbnail( $post_id )
 			? get_the_post_thumbnail( $post_id, 'medium_large', array( 'loading' => 'lazy' ) )
 			: '';
 
@@ -69,7 +66,7 @@ if ( ! function_exists( 'seam_posts_grid_render_post_item' ) ) :
 		$word_count   = str_word_count( wp_strip_all_tags( $post->post_content ) );
 		$reading_time = max( 1, (int) ceil( $word_count / 200 ) );
 
-		$html  = '<div class="ipg-card">';
+		$html = '<article class="ipg-card">';
 
 		if ( $thumbnail ) {
 			$html .= '<a href="' . esc_url( $permalink ) . '" class="ipg-card__image" tabindex="-1" aria-hidden="true">';
@@ -79,34 +76,27 @@ if ( ! function_exists( 'seam_posts_grid_render_post_item' ) ) :
 
 		$html .= '<div class="ipg-card__body">';
 
-		// Meta row: category | date + reading time.
+		// Meta row: category, date, reading time — spaced, no separators.
 		$html .= '<div class="ipg-card__meta-row">';
 		if ( $cat_name ) {
 			$html .= '<span class="ipg-card__category">' . esc_html( $cat_name ) . '</span>';
 		}
-		$html .= '<span class="ipg-card__meta">';
 		$html .= '<span class="ipg-card__date">' . esc_html( $date ) . '</span>';
-		$html .= '<span class="ipg-card__sep" aria-hidden="true">&middot;</span>';
 		/* translators: %d: reading time in minutes. */
 		$html .= '<span class="ipg-card__read-time">' . sprintf( esc_html__( '%d min read', 'seamless' ), $reading_time ) . '</span>';
-		$html .= '</span>';
 		$html .= '</div>';
 
-		$html .= '<h2 class="ipg-card__title"><a href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a></h2>';
+		// h3: sits under the grid's own h2 heading (the `title` attribute).
+		$html .= '<h3 class="ipg-card__title"><a href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a></h3>';
 
 		if ( $excerpt ) {
 			$html .= '<p class="ipg-card__excerpt">' . esc_html( $excerpt ) . '</p>';
 		}
 
-		// Read more button.
-		$arrow_svg = '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M.75 5.417h9.333m-4.666 4.666 4.666-4.666L5.417.75" stroke="url(#seam-arrow-grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="seam-arrow-grad" x1="12.12" y1=".71" x2="-.53" y2="1.894" gradientUnits="userSpaceOnUse"><stop offset=".184" stop-color="#886066"/><stop offset=".918" stop-color="#253b2f"/></linearGradient></defs></svg>';
-		$html    .= '<a class="ipg-card__read-more" href="' . esc_url( $permalink ) . '">';
-		$html    .= '<span>' . esc_html__( 'Read More', 'seamless' ) . '</span>';
-		$html    .= $arrow_svg;
-		$html    .= '</a>';
+		$html .= '<a class="ipg-card__read-more" href="' . esc_url( $permalink ) . '">' . esc_html__( 'Read the article', 'seamless' ) . '</a>';
 
 		$html .= '</div>';
-		$html .= '</div>';
+		$html .= '</article>';
 
 		return $html;
 	}
@@ -201,7 +191,10 @@ endif;
 
 if ( ! function_exists( 'seam_posts_grid_render_pagination' ) ) :
 	/**
-	 * Renders prev/next arrows + numbered page buttons with ellipsis.
+	 * Renders numbered page buttons with ellipsis, bookended by Prev/Next steps.
+	 *
+	 * Prev and Next are text buttons rather than arrows, and each is omitted at
+	 * the end of the range it points past (so page 1 opens with "1 2 3 Next").
 	 */
 	function seam_posts_grid_render_pagination( $total_pages, $current_page ) {
 		$total_pages  = (int) $total_pages;
@@ -211,20 +204,14 @@ if ( ! function_exists( 'seam_posts_grid_render_pagination' ) ) :
 			return '';
 		}
 
-		$svg_prev = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
-		$svg_next = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
-
 		$html = '<div class="ipg-pagination">';
 
-		// Prev.
-		$prev_page = max( 1, $current_page - 1 );
-		$html     .= '<button class="ipg-page-btn ipg-page-arrow"'
-			. ( 1 === $current_page ? ' disabled' : '' )
-			. ' data-page="' . $prev_page . '" aria-label="' . esc_attr__( 'Previous page', 'seamless' ) . '">'
-			. $svg_prev
-			. '</button>';
+		if ( $current_page > 1 ) {
+			$html .= '<button class="ipg-page-btn ipg-page-step" data-page="' . ( $current_page - 1 ) . '" aria-label="' . esc_attr__( 'Previous page', 'seamless' ) . '">'
+				. esc_html__( 'Prev', 'seamless' )
+				. '</button>';
+		}
 
-		// Pages.
 		foreach ( seam_posts_grid_pagination_range( $total_pages, $current_page ) as $page ) {
 			if ( '...' === $page ) {
 				$html .= '<span class="ipg-page-ellipsis">&hellip;</span>';
@@ -234,17 +221,36 @@ if ( ! function_exists( 'seam_posts_grid_render_pagination' ) ) :
 			}
 		}
 
-		// Next.
-		$next_page = min( $total_pages, $current_page + 1 );
-		$html     .= '<button class="ipg-page-btn ipg-page-arrow"'
-			. ( $current_page === $total_pages ? ' disabled' : '' )
-			. ' data-page="' . $next_page . '" aria-label="' . esc_attr__( 'Next page', 'seamless' ) . '">'
-			. $svg_next
-			. '</button>';
+		if ( $current_page < $total_pages ) {
+			$html .= '<button class="ipg-page-btn ipg-page-step" data-page="' . ( $current_page + 1 ) . '" aria-label="' . esc_attr__( 'Next page', 'seamless' ) . '">'
+				. esc_html__( 'Next', 'seamless' )
+				. '</button>';
+		}
 
 		$html .= '</div>';
 
 		return $html;
+	}
+endif;
+
+
+if ( ! function_exists( 'seam_posts_grid_render_count' ) ) :
+	/**
+	 * Renders the "Showing N of M articles" line that sits opposite the pagination.
+	 *
+	 * @param WP_Query $query The query the current page was rendered from.
+	 */
+	function seam_posts_grid_render_count( $query ) {
+		$total = (int) $query->found_posts;
+
+		if ( ! $total ) {
+			return '';
+		}
+
+		return '<p class="ipg-count">'
+			/* translators: 1: number of posts on this page, 2: total number of posts. */
+			. sprintf( esc_html__( 'Showing %1$d of %2$d articles', 'seamless' ), (int) $query->post_count, $total )
+			. '</p>';
 	}
 endif;
 
@@ -304,6 +310,7 @@ if ( ! function_exists( 'seam_posts_grid_ajax' ) ) :
 		wp_send_json_success( array(
 			'html'         => seam_posts_grid_render_posts( $query, $taxonomy ),
 			'pagination'   => seam_posts_grid_render_pagination( (int) $query->max_num_pages, $page ),
+			'count'        => seam_posts_grid_render_count( $query ),
 			'total_pages'  => (int) $query->max_num_pages,
 			'current_page' => $page,
 		) );
@@ -374,12 +381,14 @@ endif;
 
 if ( ! function_exists( 'seam_posts_grid_shortcode' ) ) :
 	/**
-	 * [seam_posts_grid per_page="6" post_type="post" categories="4,9" id=""]
+	 * [seam_posts_grid per_page="6" post_type="post" categories="4,9" id="" title="All Insights."]
 	 *
 	 * `per_page`   — posts per page (default 6).
 	 * `categories` — comma-separated term IDs or slugs; omit for all categories.
 	 * `id`         — when set, tabs are omitted and the grid listens for a remote
 	 *                seam:filter event fired by [seam_posts_tabs for="<id>"].
+	 * `title`      — heading rendered as an h2 opposite the filter tabs
+	 *                (default "All Insights."); pass title="" to omit it.
 	 */
 	function seam_posts_grid_shortcode( $atts ) {
 		$atts = shortcode_atts(
@@ -388,6 +397,7 @@ if ( ! function_exists( 'seam_posts_grid_shortcode' ) ) :
 				'post_type'  => 'post',
 				'categories' => '',
 				'id'         => '',
+				'title'      => 'All Insights.',
 			),
 			$atts,
 			'seam_posts_grid'
@@ -396,6 +406,7 @@ if ( ! function_exists( 'seam_posts_grid_shortcode' ) ) :
 		$per_page  = min( 50, max( 1, (int) $atts['per_page'] ) );
 		$post_type = sanitize_key( $atts['post_type'] );
 		$grid_id   = sanitize_html_class( $atts['id'] );
+		$title     = trim( wp_strip_all_tags( (string) $atts['title'] ) );
 
 		if ( ! post_type_exists( $post_type ) ) {
 			$post_type = 'post';
@@ -437,7 +448,10 @@ if ( ! function_exists( 'seam_posts_grid_shortcode' ) ) :
 		$grid_id_attr = $grid_id ? ' data-grid-id="' . esc_attr( $grid_id ) . '"' : '';
 		$html = '<div class="ipg-wrapper" data-config="' . esc_attr( $config ) . '"' . $grid_id_attr . '>';
 
-		// Embed tabs only in self-contained mode (no id attribute).
+		// Header: heading on the left, filter tabs on the right. Tabs are embedded
+		// only in self-contained mode (no id attribute); with an id they live in a
+		// separate [seam_posts_tabs] block elsewhere on the page.
+		$tabs = '';
 		if ( ! $grid_id ) {
 			$terms = get_terms( array(
 				'taxonomy'   => $taxonomy,
@@ -445,11 +459,24 @@ if ( ! function_exists( 'seam_posts_grid_shortcode' ) ) :
 				'orderby'    => 'include',
 				'hide_empty' => true,
 			) );
-			$html .= seam_posts_grid_render_tabs( is_wp_error( $terms ) ? array() : $terms );
+			$tabs = seam_posts_grid_render_tabs( is_wp_error( $terms ) ? array() : $terms );
+		}
+
+		if ( $title || $tabs ) {
+			$html .= '<div class="ipg-header">';
+			if ( $title ) {
+				$html .= '<h2 class="ipg-heading">' . esc_html( $title ) . '</h2>';
+			}
+			$html .= $tabs;
+			$html .= '</div>';
 		}
 
 		$html .= '<div class="ipg-posts">' . seam_posts_grid_render_posts( $query, $taxonomy ) . '</div>';
+
+		$html .= '<div class="ipg-footer">';
+		$html .= '<div class="ipg-count-wrap">' . seam_posts_grid_render_count( $query ) . '</div>';
 		$html .= '<div class="ipg-pagination-wrap">' . seam_posts_grid_render_pagination( (int) $query->max_num_pages, 1 ) . '</div>';
+		$html .= '</div>';
 
 		$html .= '</div>';
 

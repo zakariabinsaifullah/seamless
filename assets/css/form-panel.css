@@ -46,7 +46,7 @@
 /* ── Header ──────────────────────────────────────────────────────────────────── */
 
 .seam-form-panel__header {
-    background: var(--wp--preset--color--seam-outer-space, #253b2f);
+    background: #3C5343;
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -275,22 +275,89 @@ body.seam-panel-open {
     outline-color: rgba(37, 57, 89, 0.15) !important;
 }
 
-.gform_button.button {
-    background: var(--wp--preset--color--seam-outer-space, #253b2f) !important;
-    color: #ffffff !important;
-    padding: 12px 24px !important;
-    border: none !important;
-    border-radius: 100px !important;
-    font-size: 16px !important;
-    font-weight: 400 !important;
-    width: auto !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+/*
+ * Submit button — the default block button, exactly.
+ *
+ * seam_gform_submit_button() (inc/form.php) rebuilds Gravity Forms' submit
+ * `<input>` as a `<button>` inside the same `.wp-block-button.seam-icon-button`
+ * wrapper a core button block renders, so layout, the trailing icon chip and
+ * the tablet/mobile treatment all come from the iconic-button stylesheet
+ * (src/extensions/iconic-button/style.scss) — including `display: flex` and the
+ * text/icon gap, which is why neither is set here.
+ *
+ * What is restated below is everything the default button gets from
+ * `styles.elements.button` in theme.json: Gravity Forms declares its own button
+ * colours, metrics and typography at a higher specificity than the
+ * `.wp-element-button` rules global styles emits, so those would otherwise win.
+ * Values are read from the same presets theme.json uses, so palette and font
+ * size changes still flow through — but keep this block in sync if
+ * `styles.elements.button` itself changes.
+ */
+.wp-block-button.seam-gform-button {
+    display: inline-block;
+    max-width: 100%;
 }
 
-/* Repeats the resting colour to override Gravity Forms' own hover background. */
-.gform_button.button:hover {
-    background: var(--wp--preset--color--seam-outer-space, #253b2f) !important;
-    color: #ffffff !important;
+/*
+ * Conditional logic on the submit button: Gravity Forms hides it with an inline
+ * `display: none` (its own branch for a literal `input[type="submit"]` doesn't
+ * fire for our `<button>`), which the block button's `display: flex !important`
+ * would out-rank. GF flags the element either way, so hide the wrapper on that
+ * flag instead.
+ */
+.wp-block-button.seam-gform-button:has(.gform_button[data-conditional-logic='hidden']) {
+    display: none;
+}
+
+.gform_wrapper .gform_button.button {
+    background: var(--wp--preset--color--seam-shadow, #7f7750) !important;
+    color: var(--wp--preset--color--seam-white, #ffffff) !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 8px !important;
+    min-height: 64px !important;
+    width: auto !important;
+    box-sizing: border-box !important;
+    font-size: var(--wp--preset--font-size--seam-large, 18px) !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    transition:
+        background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Mirrors `styles.elements.button:hover` — the fill and text swap, and the icon
+   chip inverts with it (handled by the iconic-button stylesheet). */
+.gform_wrapper .gform_button.button:hover {
+    background: var(--wp--preset--color--seam-primary, #f3ebe4) !important;
+    color: var(--wp--preset--color--seam-shadow, #7f7750) !important;
+}
+
+/* Mirrors `styles.elements.button:focus`. */
+.gform_wrapper .gform_button.button:focus {
+    outline-color: var(--wp--preset--color--seam-gray-asparagus-darkest, #121814) !important;
+    outline-offset: 2px !important;
+}
+
+/* Tablet and mobile: the button goes full width and the icon chip is pinned to
+   the right edge, so the label needs room to clear it. The iconic-button
+   stylesheet already declares exactly this, but the resting `padding` above is
+   `!important` (it has to out-rank Gravity Forms' own button padding) and would
+   otherwise win — so restate it here. Keep in sync with the same media query in
+   src/extensions/iconic-button/style.scss. */
+@media (max-width: 1024px) {
+    .gform_wrapper .gform_button.button {
+        padding-right: calc(8px + var(--seam-icon-gap, 8px) + (2 * var(--seam-icon-padding, 17px)) + var(--seam-icon-size, 14px)) !important;
+
+        /* The extension makes the wrapper full width; a block button's `<a>`
+           fills it on its own, but a `<button>` shrink-wraps its content even as
+           a flex container, so it has to be told. */
+        width: 100% !important;
+    }
 }
 
 label.gfield_label.gform-field-label {

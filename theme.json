@@ -450,6 +450,11 @@
                 "variations": {
                     "link": {
                         "border": {
+                            "bottom": {
+                                "color": "currentColor",
+                                "style": "solid",
+                                "width": "1px"
+                            },
                             "color": "transparent",
                             "radius": "0px",
                             "style": "none",

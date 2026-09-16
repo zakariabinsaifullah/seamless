@@ -1,7 +1,7 @@
 // See style.scss for why this `:not()` is a defensive backstop, not just a
-// no-op — content saved before Alternative/Outline were excluded can still
+// no-op — content saved before the non-default styles were excluded can still
 // carry the `seam-icon-button` class until it's re-saved.
-.wp-block-button.seam-icon-button:not(.is-style-alternative):not(.is-style-outline) {
+.wp-block-button.seam-icon-button:not(.is-style-alternative):not(.is-style-outline):not(.is-style-link) {
     .wp-block-button__link {
         display: flex;
         align-items: center;
@@ -20,9 +20,15 @@
             justify-content: flex-end !important;
         }
 
+        // The editor preview paints the glyph as a `background-image` on this
+        // pseudo-element (editor.js supplies `--seam-icon-url` per block), which
+        // stands in for the real `.seam-icon-button-svg` span the frontend
+        // renders. The class only lands on buttons that actually have an icon,
+        // so this is always shown — gating it on the inline `<style>` editor.js
+        // emits would fail, since that rule is less specific than this one.
         &:after {
             content: '';
-            display: none;
+            display: inline-flex;
             flex-shrink: 0;
             pointer-events: none;
             width: calc(var(--seam-icon-size, 14px) + (2 * var(--seam-icon-padding, 17px)));
@@ -37,11 +43,9 @@
         }
     }
 
-    // Default button only (Alternative/Outline never get this class at all —
-    // see editor.js/save.js; Link sets its own icon treatment): invert the
-    // icon chip to match the button's hover fill/text swap in theme.json
-    // (styles.elements.button:hover).
-    &:not(.is-style-link) .wp-block-button__link:hover:after {
+    // Invert the icon chip to match the button's hover fill/text swap in
+    // theme.json (styles.elements.button:hover).
+    .wp-block-button__link:hover:after {
         background-color: var(--wp--preset--color--seam-shadow);
     }
 

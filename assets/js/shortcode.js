@@ -8,6 +8,7 @@
 			var config       = JSON.parse( wrapper.dataset.config || '{}' );
 			var postsEl      = wrapper.querySelector( '.ipg-posts' );
 			var paginationEl = wrapper.querySelector( '.ipg-pagination-wrap' );
+			var countEl      = wrapper.querySelector( '.ipg-count-wrap' );
 			var state        = { cat: 0, page: 1 };
 			var loading      = false;
 
@@ -33,6 +34,9 @@
 						if ( data.success ) {
 							postsEl.innerHTML      = data.data.html;
 							paginationEl.innerHTML = data.data.pagination;
+							if ( countEl ) {
+								countEl.innerHTML = data.data.count || '';
+							}
 							bindPagination();
 						}
 					} )

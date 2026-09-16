@@ -1053,6 +1053,25 @@ if ( ! function_exists( 'seam_iconic_button_default_svg' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'seam_iconic_button_is_default_style' ) ) :
+	/**
+	 * Whether a button's class list represents the default (fill) button style.
+	 *
+	 * The icon is a treatment of the default button only — every other style
+	 * variation (Alternative, Outline, Link, or anything a plugin registers) is
+	 * icon-free. Rather than denylisting known styles, any `is-style-*` class
+	 * other than core's `is-style-fill` counts as non-default, so newly
+	 * registered variations are excluded automatically. Mirrored in JS by
+	 * src/extensions/iconic-button/default-style.js — keep both in sync.
+	 *
+	 * @param string $class_names Space-separated class list.
+	 * @return bool True when the button uses the default style.
+	 */
+	function seam_iconic_button_is_default_style( $class_names ) {
+		return ! preg_match( '/\bis-style-(?!fill(?![\w-]))[\w-]+/', (string) $class_names );
+	}
+endif;
+
 if ( ! function_exists( 'seam_render_iconic_button' ) ) :
 	/**
 	 * Injects the icon SVG markup and size/gap/padding/background CSS custom
@@ -1074,15 +1093,23 @@ if ( ! function_exists( 'seam_render_iconic_button' ) ) :
 
 		$enabled = ! isset( $attrs['iconicButtonEnabled'] ) || $attrs['iconicButtonEnabled'];
 
-		// Alternative and Outline are text-only styles — skip the icon (and the
-		// `seam-icon-button` class it brings, which reserves layout space for it)
-		// entirely, rather than injecting it and hiding it with CSS.
-		$style_classes = $attrs['className'] ?? '';
-		if ( str_contains( $style_classes, 'is-style-alternative' ) || str_contains( $style_classes, 'is-style-outline' ) ) {
-			$enabled = false;
+		if ( ! $enabled || empty( $block_content ) ) {
+			return $block_content;
 		}
 
-		if ( ! $enabled || empty( $block_content ) ) {
+		// Only the default (fill) button carries an icon — every other style
+		// variation skips it, along with the `seam-icon-button` class that
+		// reserves layout space for it, rather than injecting it and hiding it
+		// with CSS. The wrapper's own classes are checked alongside the
+		// `className` attribute, so hand-written pattern markup that carries
+		// `is-style-*` only on the markup is handled too.
+		$processor = new WP_HTML_Tag_Processor( $block_content );
+		if ( ! $processor->next_tag() ) {
+			return $block_content;
+		}
+
+		$style_classes = trim( ( $attrs['className'] ?? '' ) . ' ' . ( $processor->get_attribute( 'class' ) ?? '' ) );
+		if ( ! seam_iconic_button_is_default_style( $style_classes ) ) {
 			return $block_content;
 		}
 
@@ -1091,40 +1118,37 @@ if ( ! function_exists( 'seam_render_iconic_button' ) ) :
 			: ( ! empty( $attrs['iconicButtonIcon'] ) ? $attrs['iconicButtonIcon'] : seam_iconic_button_default_svg() );
 
 		// Add the styling hooks (wrapper classes + any per-instance CSS custom
-		// properties) to the outer wrapper element in a single tag-processor pass.
-		$processor = new WP_HTML_Tag_Processor( $block_content );
-		if ( $processor->next_tag() ) {
-			$processor->add_class( 'seam-icon-button' );
-			if ( 'seam-icon-before' === ( $attrs['iconicButtonIconPosition'] ?? '' ) ) {
-				$processor->add_class( 'seam-icon-before' );
-			}
-
-			$css_vars = array();
-			if ( ! empty( $attrs['iconicButtonIconSize'] ) ) {
-				$css_vars[] = '--seam-icon-size:' . esc_attr( $attrs['iconicButtonIconSize'] );
-			}
-			if ( ! empty( $attrs['iconicButtonIconGap'] ) ) {
-				$css_vars[] = '--seam-icon-gap:' . esc_attr( $attrs['iconicButtonIconGap'] );
-			}
-			if ( ! empty( $attrs['iconicButtonIconPadding'] ) ) {
-				$css_vars[] = '--seam-icon-padding:' . esc_attr( $attrs['iconicButtonIconPadding'] );
-			}
-			if ( ! empty( $attrs['iconicButtonIconBgColor'] ) ) {
-				$css_vars[] = '--seam-icon-bg-color:' . esc_attr( $attrs['iconicButtonIconBgColor'] );
-			}
-
-			if ( ! empty( $css_vars ) ) {
-				$existing_style = $processor->get_attribute( 'style' ) ?? '';
-				$new_style      = rtrim( $existing_style, '; ' );
-				if ( $new_style ) {
-					$new_style .= ';';
-				}
-				$new_style .= implode( ';', $css_vars );
-				$processor->set_attribute( 'style', $new_style );
-			}
-
-			$block_content = $processor->get_updated_html();
+		// properties) to the outer wrapper element the processor is already on.
+		$processor->add_class( 'seam-icon-button' );
+		if ( 'seam-icon-before' === ( $attrs['iconicButtonIconPosition'] ?? '' ) ) {
+			$processor->add_class( 'seam-icon-before' );
 		}
+
+		$css_vars = array();
+		if ( ! empty( $attrs['iconicButtonIconSize'] ) ) {
+			$css_vars[] = '--seam-icon-size:' . esc_attr( $attrs['iconicButtonIconSize'] );
+		}
+		if ( ! empty( $attrs['iconicButtonIconGap'] ) ) {
+			$css_vars[] = '--seam-icon-gap:' . esc_attr( $attrs['iconicButtonIconGap'] );
+		}
+		if ( ! empty( $attrs['iconicButtonIconPadding'] ) ) {
+			$css_vars[] = '--seam-icon-padding:' . esc_attr( $attrs['iconicButtonIconPadding'] );
+		}
+		if ( ! empty( $attrs['iconicButtonIconBgColor'] ) ) {
+			$css_vars[] = '--seam-icon-bg-color:' . esc_attr( $attrs['iconicButtonIconBgColor'] );
+		}
+
+		if ( ! empty( $css_vars ) ) {
+			$existing_style = $processor->get_attribute( 'style' ) ?? '';
+			$new_style      = rtrim( $existing_style, '; ' );
+			if ( $new_style ) {
+				$new_style .= ';';
+			}
+			$new_style .= implode( ';', $css_vars );
+			$processor->set_attribute( 'style', $new_style );
+		}
+
+		$block_content = $processor->get_updated_html();
 
 		// Build the icon markup and inject it after the link's inner content.
 		// Before/after visual ordering is handled entirely by CSS (flex-direction: row-reverse

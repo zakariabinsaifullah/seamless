@@ -1,5 +1,6 @@
 import { addFilter } from '@wordpress/hooks';
 import { allowedBlocks } from './allowed-blocks';
+import { isDefaultButtonStyle } from './default-style';
 
 /**
  * Add iconic button classes to saved block HTML for the frontend.
@@ -16,12 +17,11 @@ function addIconicButtonSaveProps( props, blockType, attributes ) {
 
     const { iconicButtonEnabled, iconicButtonUniqueClass, iconicButtonIconPosition, className } = attributes;
 
-    // Alternative and Outline are text-only styles — skip the icon classes
-    // entirely rather than adding then hiding them with CSS. Mirrors the same
-    // check in editor.js and inc/extensions.php (seam_render_iconic_button).
-    const isTextOnlyStyle = /is-style-(alternative|outline)/.test( className || '' );
-
-    if ( ! iconicButtonEnabled || ! iconicButtonUniqueClass || isTextOnlyStyle ) {
+    // Only the default (fill) button carries an icon — every other style
+    // variation skips the icon classes entirely rather than adding then hiding
+    // them with CSS. Mirrors the same check in editor.js and inc/extensions.php
+    // (seam_render_iconic_button).
+    if ( ! iconicButtonEnabled || ! iconicButtonUniqueClass || ! isDefaultButtonStyle( className ) ) {
         return props;
     }
 
