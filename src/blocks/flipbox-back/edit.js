@@ -7,7 +7,7 @@ const Edit = ({ attributes, setAttributes }) => {
     const { backgroundImage, heading } = attributes;
 
     const blockProps = useBlockProps({
-        className: 'flip-box_face flip-box_back',
+        className: 'flip-box_face flip-box_front',
         style: getBackgroundStyle(backgroundImage)
     });
 
@@ -20,7 +20,7 @@ const Edit = ({ attributes, setAttributes }) => {
         <>
             <Inspector attributes={attributes} setAttributes={setAttributes} />
             <div {...blockProps}>
-                <div className="flip-box-content flip-box_back-content">
+                <div className="flip-box-content flip-box_front-content">
                     <RichText
                         tagName="h4"
                         className="flip-box_heading"
