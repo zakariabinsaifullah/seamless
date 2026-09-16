@@ -35,7 +35,7 @@
             width: 100%;
         }
 
-        .flip-box_back {
+        .flip-box_front {
             height: 100%;
             left: 0;
             position: absolute;
@@ -44,7 +44,7 @@
             background-position: center bottom;
         }
 
-        .flip-box_front {
+        .flip-box_back {
             background-color: var(--flip-front-bg);
         }
 
@@ -138,20 +138,20 @@
         }
     }
 
-    .flip-box_back-content {
+    .flip-box_front-content {
         justify-content: flex-end;
         padding-top: var(--flip-content-padding);
         padding-bottom: 23px;
     }
 
-    .flip-box_front {
+    .flip-box_back {
         position: relative;
         z-index: 1;
         .flip-box-content {
             transform: translateZ(60px) scale(1.048);
         }
     }
-    .flip-box_back {
+    .flip-box_front {
         position: relative;
         z-index: 2;
         background-color: var(--flipblock-item-bg-color);

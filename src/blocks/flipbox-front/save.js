@@ -3,7 +3,7 @@ import { RichText, useBlockProps } from '@wordpress/block-editor';
 const Save = ({ attributes }) => {
     const { heading, description, footerText, footerLink } = attributes;
 
-    const blockProps = useBlockProps.save({ className: 'flip-box_face flip-box_front' });
+    const blockProps = useBlockProps.save({ className: 'flip-box_face flip-box_back' });
 
     const FooterTag = footerLink?.url ? 'a' : 'div';
     const footerProps = footerLink?.url
@@ -12,7 +12,7 @@ const Save = ({ attributes }) => {
 
     return (
         <div {...blockProps}>
-            <div className="flip-box-content flip-box_front-content">
+            <div className="flip-box-content flip-box_back-content">
                 <RichText.Content tagName="h4" className="flip-box_heading" value={heading} />
                 <RichText.Content tagName="p" value={description} />
                 <FooterTag className="flip-box_footer" {...footerProps}>
