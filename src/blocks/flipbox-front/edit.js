@@ -30,7 +30,7 @@ const Edit = ({ attributes, setAttributes }) => {
                         onChange={value => setAttributes({ description: value })}
                         placeholder="Description…"
                     />
-                    <FooterTag className="flip-box_footer" {...footerProps}>
+                    <FooterTag className="flip-box_footer">
                         <RichText
                             tagName="span"
                             className="flip-box_footer-text"
