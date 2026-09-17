@@ -18,6 +18,10 @@
     }
 
     .flip-box_inner-item {
+        background-color: var(--flip-front-bg);
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
         box-sizing: border-box;
         min-height: var(--flip-inner-item-height);
         position: relative;
@@ -42,10 +46,6 @@
             top: 0;
             background-size: cover;
             background-position: center bottom;
-        }
-
-        .flip-box_back {
-            background-color: var(--flip-front-bg);
         }
 
         .flip-box-content {
